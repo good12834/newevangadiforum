@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const port = 5500;
+const createTables = require("./db/dbSchema");
 
 // app.get("/", (req, res) => {
 //   res.send("Welcome");
@@ -9,16 +10,11 @@ const port = 5500;
 // User route middleware file
 const userRoutes = require("./routes/userRoutes");
 
-// questions route middleware file
-
-// answers route middleware file
-
 // users routes middleware
 app.use("/api/users", userRoutes);
 
-// questions route middleware
-
-// answers route middleware
+// Create tables with an endpoint
+app.get("/create-table", createTables);
 
 app.listen(port, (err) => {
   if (err) {
