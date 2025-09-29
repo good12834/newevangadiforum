@@ -6,20 +6,19 @@ const port = 5500;
 //   res.send("Welcome");
 // });
 
-// register route
-app.post("/api/users/register", (req, res) => {
-  res.send("register user");
-});
+// User route middleware file
+const userRoutes = require("./routes/userRoutes");
 
-// login user
-app.post("/api/users/login", (req, res) => {
-  res.send("login user");
-});
+// questions route middleware file
 
-// check user
-app.get("/api/users/check", (req, res) => {
-  res.send("check user");
-});
+// answers route middleware file
+
+// users routes middleware
+app.use("/api/users", userRoutes);
+
+// questions route middleware
+
+// answers route middleware
 
 app.listen(port, (err) => {
   if (err) {
