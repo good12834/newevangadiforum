@@ -1,7 +1,7 @@
 const dbConnection = require("../db/dbConfig");
 const { StatusCodes } = require("http-status-codes");
 const jwt = require("jsonwebtoken");
-const bcyrpt = require("bcrypt");
+const bcrypt = require("bcrypt");
 
 // Registration controller
 async function register(req, res) {
@@ -16,7 +16,7 @@ async function register(req, res) {
   }
   // try to inserting to database
   try {
-    const selectUser = `SELECT  username,user_id FROM USER where username=?or email=? `;
+    const selectUser = `SELECT  user_name,user_id FROM userTable where user_name=? or email=? `;
     const [users] = await dbConnection.query(selectUser, [username, email]);
     // check if user already exists in the database
     if (users.length > 0) {
@@ -33,12 +33,11 @@ async function register(req, res) {
       });
     }
     // bcyrpt password
-    // salt is a random string that is used to generate a hashed password. 10 is the number of rounds to hash the password. 10 is a good default.
-    const salt = await bcyrpt.genSalt(10);
-    const hashedPassword = await bcyrpt.hash(password, salt);
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     // insert user data to the database
-    const insertData = `INSERT INTO USER(username,firstname,lastname,email,password) VALUES (?,?,?,?,?)`;
+    const insertData = `INSERT INTO userTable(user_name,first_name,last_name,email,password) VALUES (?,?,?,?,?)`;
     await dbConnection.query(insertData, [
       username,
       first_name,
@@ -71,7 +70,7 @@ async function login(req, res) {
 
   try {
     const selectemail =
-      "SELECT username,password,user_id,firstname FROM USER where email=?";
+      "SELECT user_name,password,user_id,first_name FROM userTable where email=?";
     const [useremail] = await dbConnection.query(selectemail, [email]);
 
     // check if user exists in the database
@@ -82,7 +81,7 @@ async function login(req, res) {
     }
 
     // check if the user exists and compare password with hashed password from the database
-    const isMatched = await bcyrpt.compare(password, useremail[0].password);
+    const isMatched = await bcrypt.compare(password, useremail[0].password);
     if (!isMatched) {
       return res
         .status(StatusCodes.UNAUTHORIZED)
@@ -90,7 +89,7 @@ async function login(req, res) {
     }
 
     // generate a jwt token with user details
-    const username = useremail[0].username;
+    const username = useremail[0].user_name;
     const id = useremail[0].user_id;
 
     // create jwt token
