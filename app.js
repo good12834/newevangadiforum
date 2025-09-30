@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const port = 5500;
+const port = 5550;
 const createTables = require("./db/dbSchema");
 
 // app.get("/", (req, res) => {
