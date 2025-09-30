@@ -1,7 +1,7 @@
 const express = require("express");
 const answerRoute = express.Router();
-const middleware = require("../middleware/Auth");
-const { deleteAnswer, editAnswer ,postAnswer, allAnswers} = require("../controller/useAnswer");
+const middleware = require("../middleware/authMiddleware");
+const { deleteAnswer, editAnswer ,postAnswer, allAnswers} = require("../controller/answerController");
 
 //this is post request to send message change the routes name and function name as you want
 answerRoute.post("/answers/:question_id",middleware, postAnswer);
