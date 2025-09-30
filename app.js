@@ -2,8 +2,11 @@ const express = require("express");
 const app = express();
 const port = 5500;
 
-//db connection
+// Middlewares
+app.use(express.json());
 
+
+//db connection
 const dbConnection = require("./db/dbConfig");
 
 const createTables = require("./db/dbSchema");
