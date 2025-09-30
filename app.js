@@ -9,9 +9,16 @@ const createTables = require("./db/dbSchema");
 
 // User route middleware file
 const userRoutes = require("./routes/userRoutes");
-
 // users routes middleware
 app.use("/api/users", userRoutes);
+
+
+// Question router middleware file
+const questionRoutes= require("./routes/questionRoutes")
+
+app.use("/api/user/questions", questionRoutes)
+
+
 
 // Create tables with an endpoint
 app.get("/create-table", createTables);
@@ -20,6 +27,6 @@ app.listen(port, (err) => {
   if (err) {
     console.log(err.message);
   } else {
-    console.log(`listening on ${port}`);
+    console.log(`listening on: http://localhost:${port}`);
   }
 });

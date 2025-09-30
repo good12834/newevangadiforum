@@ -52,6 +52,7 @@ const createTables = (req, res) => {
       });
     });
   });
+  res.end("Evangadi Form Table is Successfully created");
 };
 
 module.exports = createTables;
