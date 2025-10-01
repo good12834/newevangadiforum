@@ -3,9 +3,31 @@ const app = express();
 const port = 5500;
 const createTables = require("./db/dbSchema");
 
-// app.get("/", (req, res) => {
-//   res.send("Welcome");
-// });
+
+// JSON middleware to extract json data
+app.use(express.json())
+
+// Question router middleware file
+const questionRoutes= require("./routes/questionRoutes")
+
+app.use("/api/question", questionRoutes)
+
+
+// DB Connection
+const dbConnection = require("./db/dbConfig");
+async function start() {
+  try {
+    const result= await dbConnection.execute("select 'test' ")
+    app.listen(port)
+    console.log(`listening on: http://localhost:${port}`);
+    console.log(result)
+  } catch (error) {
+    console.log(error.message)
+  }
+  
+}
+start();
+
 
 // User route middleware file
 const userRoutes = require("./routes/userRoutes");
@@ -13,20 +35,19 @@ const userRoutes = require("./routes/userRoutes");
 app.use("/api/users", userRoutes);
 
 
-// Question router middleware file
-const questionRoutes= require("./routes/questionRoutes")
-
-app.use("/api/user/questions", questionRoutes)
-
-
 
 // Create tables with an endpoint
 app.get("/create-table", createTables);
 
-app.listen(port, (err) => {
-  if (err) {
-    console.log(err.message);
-  } else {
-    console.log(`listening on: http://localhost:${port}`);
-  }
-});
+// app.listen(port, (err) => {
+//   if (err) {
+//     console.log(err.message);
+//   } else {
+//     console.log(`listening on: http://localhost:${port}`);
+//   }
+// });
+
+
+// app.get("/", (req, res) => {
+//   res.send("Welcome");
+// });
