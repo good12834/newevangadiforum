@@ -3,7 +3,6 @@ const dbConnection = require("../db/dbConfig");
 const bcrypt = require("bcrypt");
 const { StatusCodes } = require("http-status-codes");
 
-
 async function register(req, res) {
   const { username, firstname, lastname, email, password } = req.body;
 
@@ -21,7 +20,9 @@ async function register(req, res) {
     );
 
     if (user.length > 0) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ msg: "user already registered" });
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ msg: "user already registered" });
     }
 
     if (password.length < 8) {
@@ -48,11 +49,40 @@ async function register(req, res) {
 }
 
 async function login(req, res) {
-  res.send("login");
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ msg: "please provide all required fields" });
+  }
+  try {
+    const [user] = await dbConnection.query(
+      "SELECT user_name, user_id, password FROM userTable WHERE email = ?",
+      [email]
+    );
+    if (user.length === 0) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ msg: "user not found" });
+    }
+    const isMatch = await bcrypt.compare(password, user[0].password);
+
+    if (!isMatch) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ msg: "invalid credentials" });
+    }
+    return res.status(StatusCodes.OK).json({ msg: "login successful" });
+  } catch (error) {
+    console.log(error.message);
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ msg: "something went wrong, try again later!" });
+  }
 }
 
 async function checkUser(req, res) {
-  res.send("check user");
+  res.send ('check user')
 }
 
 module.exports = { register, login, checkUser };
