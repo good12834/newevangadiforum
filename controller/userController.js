@@ -3,6 +3,8 @@ const dbConnection = require("../db/dbConfig");
 const bcrypt = require("bcrypt");
 const { StatusCodes } = require("http-status-codes");
 
+const jwt = require("jsonwebtoken");
+
 async function register(req, res) {
   const { username, firstname, lastname, email, password } = req.body;
 
@@ -72,7 +74,12 @@ async function login(req, res) {
         .status(StatusCodes.BAD_REQUEST)
         .json({ msg: "invalid credentials" });
     }
-    return res.status(StatusCodes.OK).json({ msg: "login successful" });
+    const username = user[0].user_name;
+    const userId = user[0].user_id;
+    const token = jwt.sign({userId, username}, "secret" {expiresIn: "1d"})
+
+    return res.status(StatusCodes.OK).json({ msg: "login successful", token });
+
   } catch (error) {
     console.log(error.message);
     return res
