@@ -11,9 +11,9 @@ const dbConnection = require("./db/dbConfig");
 
 const createTables = require("./db/dbSchema");
 
-// app.get("/", (req, res) => {
-//   res.send("Welcome");
-// });
+app.get("/", (req, res) => {
+  res.send("Welcome");
+});
 
 // User route middleware file
 const userRoutes = require("./routes/userRoutes");
