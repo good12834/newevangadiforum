@@ -1,22 +1,6 @@
 const dbConnection = require("../db/dbConfig");
 
 async function createQuestion(req, res) {
-    // const { title, question_description, tag } = req.body;
-    // if (!title || !question_description || !tag) {
-    //   return res.status(400).json({ msg: "please provide all required fields" });
-    // }
-    // try {
-    //     await dbConnection.query(
-    //       "INSERT INTO questionTable (title, question_description, tag) VALUES (?, ?, ?)",
-    //       [title, question_description, tag]);
-
-    //       return res.status(201).json({msg: "Question Created"}); 
-    // } catch (error) {
-    //     console.log(error.message)
-    //     return res.status(500).json({msg:"Something went wrong, try again later"})
-    // }
-//   res.send("Greetings, team, The question is created");
-
 const { title, question_description, tag } = req.body;
 const userId = req.user?.userId; // comes from auth middleware
 
