@@ -12,6 +12,14 @@ const questionRoutes= require("./routes/questionRoutes")
 
 app.use("/api/question", questionRoutes)
 
+// User route middleware file
+const userRoutes = require("./routes/userRoutes");
+// users routes middleware
+app.use("/api/users", userRoutes);
+
+
+// Create tables with an endpoint
+app.get("/create-table", createTables);
 
 // DB Connection
 const dbConnection = require("./db/dbConfig");
@@ -29,25 +37,5 @@ async function start() {
 start();
 
 
-// User route middleware file
-const userRoutes = require("./routes/userRoutes");
-// users routes middleware
-app.use("/api/users", userRoutes);
 
 
-
-// Create tables with an endpoint
-app.get("/create-table", createTables);
-
-// app.listen(port, (err) => {
-//   if (err) {
-//     console.log(err.message);
-//   } else {
-//     console.log(`listening on: http://localhost:${port}`);
-//   }
-// });
-
-
-// app.get("/", (req, res) => {
-//   res.send("Welcome");
-// });
