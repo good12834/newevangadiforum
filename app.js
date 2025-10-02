@@ -29,26 +29,6 @@ app.use("/api/users", userRoutes);
 // Create tables with an endpoint
 app.get("/create-table", createTables);
 
-<<<<<<< HEAD
-// DB Connection
-const dbConnection = require("./db/dbConfig");
-async function start() {
-  try {
-    const result= await dbConnection.execute("select 'test' ")
-    app.listen(port)
-    console.log(`listening on: http://localhost:${port}`);
-    console.log(result)
-  } catch (error) {
-    console.log(error.message)
-  }
-  
-}
-start();
-
-
-
-
-=======
 async function start() {
   try {
     const result = await dbConnection.execute("select 'test'");
@@ -61,4 +41,3 @@ async function start() {
 }
 
 start();
->>>>>>> main
