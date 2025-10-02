@@ -39,6 +39,7 @@ async function createQuestion(req, res) {
 // Get all questions (with username)
 async function getAllQuestion(req, res) {
   try {
+    const userid = req.user?.userId; // decoded from JWT by authMiddleware
     const [rows] = await dbConnection.query(
       `SELECT 
         q.question_id,
@@ -50,7 +51,8 @@ async function getAllQuestion(req, res) {
         u.user_name
       FROM questionTable q
       INNER JOIN userTable u ON q.user_id = u.user_id
-      ORDER BY q.createdAt DESC`
+      ORDER BY q.createdAt DESC`,
+      [userid]
     );
 
     res.status(200).json(rows);
@@ -64,6 +66,7 @@ async function getAllQuestion(req, res) {
 // Get single question
 async function getSingleQuestion(req, res) {
   const { question_id } = req.params;
+  const userid = req.user?.userId; // decoded from JWT by authMiddleware
 
   try {
     const [rows] = await dbConnection.query(
@@ -78,7 +81,7 @@ async function getSingleQuestion(req, res) {
       FROM questionTable q
       INNER JOIN userTable u ON q.user_id = u.user_id
       WHERE q.question_id = ?`,
-      [question_id]
+      [question_id, userid]
     );
 
     if (rows.length === 0) {
@@ -92,10 +95,89 @@ async function getSingleQuestion(req, res) {
   }
 }
 
+// Update a question by ID (only owner can update)
+async function updateQuestion(req, res) {
+  const { question_id } = req.params;
+  const { title, question_description, tag } = req.body;
+  const userId = req.user?.userId; 
+
+  console.log("Updating question:", question_id, "by user:", userId);
+
+  try {
+    const [existing] = await dbConnection.query(
+      `SELECT * FROM questionTable WHERE question_id = ?`,
+      [question_id]
+    );
+
+    console.log("Found question:", existing);
+
+    if (existing.length === 0) {
+      return res.status(404).json({ message: "Question not found" });
+    }
+
+    // Check ownership clearly
+    if (parseInt(existing[0].user_id, 10) !== parseInt(userId, 10)) {
+      return res.status(403).json({
+        message: `You are not authorized to update this question. (Owner: ${existing[0].user_id}, Your ID: ${userId})`,
+      });
+    }
+
+    await dbConnection.query(
+      `UPDATE questionTable 
+       SET title = ?, question_description = ?, tag = ?
+       WHERE question_id = ?`,
+      [title, question_description, tag, question_id]
+    );
+
+    res.status(200).json({ message: "Question updated successfully" });
+  } catch (err) {
+    console.error("Error in updateQuestion:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+// Delete a question by ID (only owner can delete)
+async function deleteQuestion(req, res) {
+  const { question_id } = req.params;
+  const userId = req.user.userId; // ✅ comes from token
+
+  try {
+    // Check if question exists
+    const [existing] = await dbConnection.query(
+      `SELECT * FROM questionTable WHERE question_id = ?`,
+      [question_id]
+    );
+
+    if (existing.length === 0) {
+      return res.status(404).json({ message: "Question not found" });
+    }
+
+    // Check ownership
+    if (parseInt(existing[0].user_id, 10) !== parseInt(userId, 10)) {
+      return res.status(403).json({
+        message: `You are not authorized to delete this question. (Owner: ${existing[0].user_id}, Your ID: ${userId})`,
+      });
+    }
+
+    // Delete the question
+    await dbConnection.query(
+      `DELETE FROM questionTable WHERE question_id = ?`,
+      [question_id]
+    );
+
+    res.status(200).json({ message: "Question deleted successfully" });
+  } catch (err) {
+    console.error("Error in deleteQuestion:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
 
 
 module.exports = {
   createQuestion,
   getAllQuestion,
   getSingleQuestion,
+  updateQuestion,
+  deleteQuestion,
 };

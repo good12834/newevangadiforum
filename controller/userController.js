@@ -2,6 +2,8 @@
 const dbConnection = require("../db/dbConfig");
 const bcrypt = require("bcrypt");
 const { StatusCodes } = require("http-status-codes");
+require("dotenv").config();
+
 
 const jwt = require("jsonwebtoken");
 
@@ -91,7 +93,7 @@ async function login(req, res) {
 
 async function checkUser(req, res) {
   const username = req.user.username;
-  const userid = req.user.userid;
+  const userid = req.user.userId;
 
   res.status(StatusCodes.OK).json({ msg: "valid user", username, userid });
 }
