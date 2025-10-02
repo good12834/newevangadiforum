@@ -98,4 +98,4 @@ async function checkUser(req, res) {
   res.status(StatusCodes.OK).json({ msg: "valid user", username, userid });
 }
 
-module.exports = { register, login, checkUser };
+module.exports = { register, login, checkUser};
