@@ -6,7 +6,7 @@ const authMiddleware = require('../middleware/authMiddleware')
 const {
   createQuestion,
   getAllQuestion,
-  getSingleQuestion
+  getSingleQuestion,
 } = require("../controller/questionController");
 
 // Question Endpoints
@@ -14,15 +14,10 @@ const {
 router.post("/", authMiddleware, createQuestion);
 
 // Get all questions (with pagination, filters, search)
-router.get("/", authMiddleware, getAllQuestion);
+router.get("/", getAllQuestion);
 
 // Get a single question by ID
-router.get("/:question_id", authMiddleware, getSingleQuestion);
+router.get("/:question_id", getSingleQuestion);
 
-// // Update a question by ID
-// router.put("/:question_id", updateQuestion);
-
-// // Delete a question by ID
-// router.delete("/:question_id", deleteQuestion);
 
 module.exports = router;
