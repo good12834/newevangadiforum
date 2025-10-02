@@ -15,20 +15,19 @@ const createTables = (req, res) => {
   )`;
 
   const question_table = `CREATE TABLE IF NOT EXISTS questionTable (
-    question_id VARCHAR(120) NOT NULL,
+    question_id INT(30) AUTO_INCREMENT PRIMARY KEY,
     user_id INT(30) NOT NULL,
     title VARCHAR(200) NOT NULL,
     question_description VARCHAR(300) NOT NULL,
     tag VARCHAR(40),
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (question_id),
     FOREIGN KEY (user_id) REFERENCES userTable(user_id) ON DELETE CASCADE
   )`;
 
   const answer_table = `CREATE TABLE IF NOT EXISTS answerTable (
     answer_id INT(30) NOT NULL AUTO_INCREMENT,
     user_id INT(30) NOT NULL,
-    question_id VARCHAR(120) NOT NULL,
+    question_id INT(30) NOT NULL,
     answer VARCHAR(300) NOT NULL,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (answer_id),
@@ -52,6 +51,7 @@ const createTables = (req, res) => {
       });
     });
   });
+  res.end("Evangadi Form Table is Successfully created");
 };
 
 module.exports = createTables;

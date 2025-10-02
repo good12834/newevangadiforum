@@ -5,19 +5,21 @@ const port = 5500;
 // Middlewares
 app.use(express.json());
 
-
 //db connection
 const dbConnection = require("./db/dbConfig");
 
 const createTables = require("./db/dbSchema");
 
-// app.get("/", (req, res) => {
-//   res.send("Welcome");
-// });
+// JSON middleware to extract json data
+app.use(express.json());
+
+// Question router middleware file
+const questionRoutes = require("./routes/questionRoutes");
+
+app.use("/api/question", questionRoutes);
 
 // User route middleware file
 const userRoutes = require("./routes/userRoutes");
-
 // users routes middleware
 app.use("/api/users", userRoutes);
 
