@@ -18,7 +18,7 @@ async function createQuestion(req, res) {
 //   res.send("Greetings, team, The question is created");
 
 const { title, question_description, tag } = req.body;
-const userId = req.user?.user_id; // comes from auth middleware
+const userId = req.user?.userId; // comes from auth middleware
 
 if (!title || !question_description) {
   return res.status(400).json({
