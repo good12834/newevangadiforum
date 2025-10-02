@@ -1,6 +1,14 @@
 const express = require("express");
 const app = express();
 const port = 5500;
+
+// Middlewares
+app.use(express.json());
+
+
+//db connection
+const dbConnection = require("./db/dbConfig");
+
 const createTables = require("./db/dbSchema");
 
 
@@ -21,6 +29,7 @@ app.use("/api/users", userRoutes);
 // Create tables with an endpoint
 app.get("/create-table", createTables);
 
+<<<<<<< HEAD
 // DB Connection
 const dbConnection = require("./db/dbConfig");
 async function start() {
@@ -39,3 +48,17 @@ start();
 
 
 
+=======
+async function start() {
+  try {
+    const result = await dbConnection.execute("select 'test'");
+    console.log("database connection established");
+    app.listen(port);
+    console.log(`listening on ${port}`);
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+start();
+>>>>>>> main
