@@ -19,7 +19,7 @@ const questionRoutes = require("./routes/questionRoutes");
 app.use("/api/question", questionRoutes);
 
 // Answer route middleware file
-const answerRoutes = require("./routes/answerRoutes");
+const answerRoutes = require("./routes/answerRoute");
 app.use("/api/answers", answerRoutes);
 
 // Create tables with an endpoint
