@@ -99,9 +99,9 @@ async function getSingleQuestion(req, res) {
 async function updateQuestion(req, res) {
   const { question_id } = req.params;
   const { title, question_description, tag } = req.body;
-  const userId = req.user?.userId;
+  const userid = req.user?.userid;
 
-  console.log("Updating question:", question_id, "by user:", userId);
+  console.log("Updating question:", question_id, "by user:", userid);
 
   try {
     const [existing] = await dbConnection.query(
@@ -116,9 +116,9 @@ async function updateQuestion(req, res) {
     }
 
     // Check ownership clearly
-    if (parseInt(existing[0].user_id, 10) !== parseInt(userId, 10)) {
+    if (parseInt(existing[0].user_id, 10) !== parseInt(userid, 10)) {
       return res.status(403).json({
-        message: `You are not authorized to update this question. (Owner: ${existing[0].user_id}, Your ID: ${userId})`,
+        message: `You are not authorized to update this question. (Owner: ${existing[0].user_id}, Your ID: ${userid})`,
       });
     }
 
@@ -139,12 +139,12 @@ async function updateQuestion(req, res) {
 // Delete a question by ID (only owner can delete)
 async function deleteQuestion(req, res) {
   const { question_id } = req.params;
-  const userId = req.user?.userId; // Add optional chaining
+  const userid = req.user?.userid; // Add optional chaining
 
-  if (!userId) {
+  if (!userid) {
     return res.status(401).json({ message: "User not authenticated" });
   }
-  
+
   try {
     // Check if question exists
     const [existing] = await dbConnection.query(
@@ -157,9 +157,9 @@ async function deleteQuestion(req, res) {
     }
 
     // Check ownership
-    if (parseInt(existing[0].user_id, 10) !== parseInt(userId, 10)) {
+    if (parseInt(existing[0].user_id, 10) !== parseInt(userid, 10)) {
       return res.status(403).json({
-        message: `You are not authorized to delete this question. (Owner: ${existing[0].user_id}, Your ID: ${userId})`,
+        message: `You are not authorized to delete this question. (Owner: ${existing[0].user_id}, Your ID: ${userid})`,
       });
     }
 
