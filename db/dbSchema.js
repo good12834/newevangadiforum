@@ -15,14 +15,14 @@ const createTables = (req, res) => {
   )`;
 
   const question_table = `CREATE TABLE IF NOT EXISTS questionTable (
-    question_id INT(30) AUTO_INCREMENT PRIMARY KEY,
-    user_id INT(30) NOT NULL,
-    title VARCHAR(200) NOT NULL,
-    question_description VARCHAR(300) NOT NULL,
-    tag VARCHAR(40),
-    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES userTable(user_id) ON DELETE CASCADE
-  )`;
+  question_id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  title VARCHAR(200) NOT NULL,
+  question_description TEXT NOT NULL,
+  tag VARCHAR(40),
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES userTable(user_id) ON DELETE CASCADE
+)`;
 
   const answer_table = `CREATE TABLE IF NOT EXISTS answerTable (
     answer_id INT(30) NOT NULL AUTO_INCREMENT,

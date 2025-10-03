@@ -4,7 +4,6 @@ const bcrypt = require("bcrypt");
 const { StatusCodes } = require("http-status-codes");
 require("dotenv").config();
 
-
 const jwt = require("jsonwebtoken");
 
 async function register(req, res) {
@@ -77,8 +76,8 @@ async function login(req, res) {
         .json({ msg: "invalid credentials" });
     }
     const username = user[0].user_name;
-    const userId = user[0].user_id;
-    const token = jwt.sign({ userId, username }, process.env.JWT_SECRET, {
+    const userid = user[0].user_id;
+    const token = jwt.sign({ userid, username }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
 
@@ -93,9 +92,9 @@ async function login(req, res) {
 
 async function checkUser(req, res) {
   const username = req.user.username;
-  const userid = req.user.userId;
+  const userid = req.user.userid;
 
   res.status(StatusCodes.OK).json({ msg: "valid user", username, userid });
 }
 
-module.exports = { register, login, checkUser};
+module.exports = { register, login, checkUser };
