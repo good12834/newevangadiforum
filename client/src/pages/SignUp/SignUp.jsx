@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import axios from "../../../axiosConfig";
+import { useState } from "react";
+import axios from "../../API/axios";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import "./SignUp.css";
@@ -26,11 +26,31 @@ const Register = () => {
     e.preventDefault();
     setLoading(true);
 
+    // Basic validation
+    if (
+      !formData.username ||
+      !formData.firstName ||
+      !formData.lastName ||
+      !formData.email ||
+      !formData.password
+    ) {
+      toast.error("All fields are required!");
+      setLoading(false);
+      return;
+    }
+
+    // Password validation
+    if (formData.password.length < 8) {
+      toast.error("Password must be at least 8 characters long");
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await axios.post("/users/register", {
         username: formData.username,
-        firstname: formData.firstName,
-        lastname: formData.lastName,
+        firstname: formData.firstName, // ✅ FIXED: firstname (no underscore)
+        lastname: formData.lastName, // ✅ FIXED: lastname (no underscore)
         email: formData.email,
         password: formData.password,
       });
