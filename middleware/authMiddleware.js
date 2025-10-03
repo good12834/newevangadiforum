@@ -1,5 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 async function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
@@ -12,11 +13,11 @@ async function authMiddleware(req, res, next) {
 
   const token = authHeader.split(" ")[1];
   console.log(authHeader);
-  console.log(token);
+  // console.log(token);
 
   try {
-    const { username, userid } = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = { username, userid };
+    const { username, userId } = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = { username, userId };
     next();
   } catch (error) {
     return res
