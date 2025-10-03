@@ -1,0 +1,69 @@
+.register-page {
+  background: url("https://www.evangadi.com/themes/humans/assets/images/misc/bg-svg-f.svg")
+    center/cover no-repeat;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.register-box {
+  background: #fff;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+}
+
+.register-box h2 {
+  font-size: 26px;
+  color: rgb(45, 56, 94);
+  margin-bottom: 20px;
+}
+
+.input-field {
+  width: 100%;
+  padding: 14px;
+  margin: 10px 0 20px 0;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+}
+
+.name-fields {
+  display: flex;
+  gap: 10px;
+}
+
+.password-wrapper {
+  position: relative;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #555;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 14px;
+  background: #ff8500;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.switch-text {
+  margin-top: 15px;
+  font-size: 14px;
+}
