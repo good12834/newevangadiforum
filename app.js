@@ -2,9 +2,6 @@ const express = require("express");
 const app = express();
 const port = 5500;
 
-// Middlewares
-app.use(express.json());
-
 //db connection
 const dbConnection = require("./db/dbConfig");
 
@@ -20,6 +17,7 @@ app.use("/api/question", questionRoutes);
 
 // User route middleware file
 const userRoutes = require("./routes/userRoutes");
+
 // users routes middleware
 app.use("/api/users", userRoutes);
 

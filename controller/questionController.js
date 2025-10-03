@@ -36,10 +36,11 @@ async function createQuestion(req, res) {
     });
   }
 }
-// Get all questions (with username)
+
+// Get all questions
 async function getAllQuestion(req, res) {
   try {
-    const userid = req.user?.userId; // decoded from JWT by authMiddleware
+    // Remove userid parameter since we're getting ALL questions
     const [rows] = await dbConnection.query(
       `SELECT 
         q.question_id,
@@ -51,8 +52,8 @@ async function getAllQuestion(req, res) {
         u.user_name
       FROM questionTable q
       INNER JOIN userTable u ON q.user_id = u.user_id
-      ORDER BY q.createdAt DESC`,
-      [userid]
+      ORDER BY q.createdAt DESC`
+      // Remove [userid] parameter
     );
 
     res.status(200).json(rows);
@@ -62,11 +63,10 @@ async function getAllQuestion(req, res) {
   }
 }
 
-
-// Get single question
+// Get a single question by ID
 async function getSingleQuestion(req, res) {
   const { question_id } = req.params;
-  const userid = req.user?.userId; // decoded from JWT by authMiddleware
+  // Remove userid since we don't need it for filtering
 
   try {
     const [rows] = await dbConnection.query(
@@ -81,7 +81,7 @@ async function getSingleQuestion(req, res) {
       FROM questionTable q
       INNER JOIN userTable u ON q.user_id = u.user_id
       WHERE q.question_id = ?`,
-      [question_id, userid]
+      [question_id] // Remove userid from parameters
     );
 
     if (rows.length === 0) {
@@ -99,7 +99,7 @@ async function getSingleQuestion(req, res) {
 async function updateQuestion(req, res) {
   const { question_id } = req.params;
   const { title, question_description, tag } = req.body;
-  const userId = req.user?.userId; 
+  const userId = req.user?.userId;
 
   console.log("Updating question:", question_id, "by user:", userId);
 
@@ -139,8 +139,12 @@ async function updateQuestion(req, res) {
 // Delete a question by ID (only owner can delete)
 async function deleteQuestion(req, res) {
   const { question_id } = req.params;
-  const userId = req.user.userId; // ✅ comes from token
+  const userId = req.user?.userId; // Add optional chaining
 
+  if (!userId) {
+    return res.status(401).json({ message: "User not authenticated" });
+  }
+  
   try {
     // Check if question exists
     const [existing] = await dbConnection.query(
@@ -171,8 +175,6 @@ async function deleteQuestion(req, res) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
-
-
 
 module.exports = {
   createQuestion,
