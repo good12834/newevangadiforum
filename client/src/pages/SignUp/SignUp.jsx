@@ -135,9 +135,9 @@ const Register = () => {
             looking to meet mentors of your own, please start by joining the
             network here.
           </p>
-          <a href="/HowItWorks">
+          <Link to="/howitworks">
             <button className="button">HOW IT WORKS</button>
-          </a>
+          </Link>
         </div>
       </div>
     </div>
