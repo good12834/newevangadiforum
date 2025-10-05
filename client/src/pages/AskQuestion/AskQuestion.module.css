@@ -1,0 +1,109 @@
+.askQuestionPage * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.askQuestionPage {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f9;
+  color: #333;
+  padding: 20px;
+}
+
+/* Steps Section */
+.steps {
+  background-color: #ffffff;
+  margin: 0 auto 20px auto; 
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  max-width: 600px;
+}
+
+.steps h2 {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 15px;
+  color: #222;
+  text-align: center; 
+}
+
+.steps ul {
+  list-style-type: disc; 
+  padding-left: 20px;    
+  text-align: left;      
+}
+
+.steps li {
+  margin-bottom: 10px;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* Center title */
+.ask {
+  text-align: center; 
+  margin-bottom: 25px;
+  margin-top: 100px;
+}
+
+.go {
+  text-align: center; 
+  margin-bottom: 10px;
+}
+
+/* Form group */
+.formGroup {
+  margin-bottom: 15px;
+}
+
+.formGroup input,
+.formGroup textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus {
+  outline-color: #007bff;
+}
+
+/* Submit Button */
+.submitButton {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.submitButton:hover {
+  background-color: #0056b3;
+}
+
+/* Success Message */
+.successMessage {
+  margin-top: 15px;
+  padding: 12px;
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* Error Message */
+.errorMessage {
+  margin-top: 15px;
+  padding: 12px;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  font-size: 14px;
+}
