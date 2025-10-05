@@ -1,14 +1,10 @@
-/* AskQuestion.css */
-
-/* Basic Reset */
-.ask-question-page * {
+.askQuestionPage * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* General Styling for Ask Question Page */
-.ask-question-page {
+.askQuestionPage {
   font-family: 'Arial', sans-serif;
   background-color: #f4f4f9;
   color: #333;
@@ -16,7 +12,7 @@
 }
 
 /* Steps Section */
-.ask-question-page .steps {
+.steps {
   background-color: #ffffff;
   margin: 0 auto 20px auto; 
   padding: 20px;
@@ -25,7 +21,7 @@
   max-width: 600px;
 }
 
-.ask-question-page .steps h2 {
+.steps h2 {
   font-size: 20px;
   font-weight: 500;
   margin-bottom: 15px;
@@ -33,38 +29,37 @@
   text-align: center; 
 }
 
-/* Steps List */
-.ask-question-page .steps ul {
+.steps ul {
   list-style-type: disc; 
   padding-left: 20px;    
   text-align: left;      
 }
-.Go{
-    text-align: center; 
-     margin-bottom: 10px;
-}
-.ask-question-page .steps li {
+
+.steps li {
   margin-bottom: 10px;
   font-size: 15px;
   line-height: 1.6;
 }
-/* Form Styling */
-.ask-question-page .form-group {
-  margin-bottom: 15px;
-}
-.Ask{
-   text-align: center; 
-    margin-bottom: 25px;
-    margin-top: 100px;
-}
-.ask-question-page .form-group label {
-  display: block;
-  font-size: 14px;
-  margin-bottom: 5px;
+
+/* Center title */
+.ask {
+  text-align: center; 
+  margin-bottom: 25px;
+  margin-top: 100px;
 }
 
-.ask-question-page .form-group input,
-.ask-question-page .form-group textarea {
+.go {
+  text-align: center; 
+  margin-bottom: 10px;
+}
+
+/* Form group */
+.formGroup {
+  margin-bottom: 15px;
+}
+
+.formGroup input,
+.formGroup textarea {
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
@@ -72,13 +67,13 @@
   font-size: 14px;
 }
 
-.ask-question-page .form-group input:focus,
-.ask-question-page .form-group textarea:focus {
+.formGroup input:focus,
+.formGroup textarea:focus {
   outline-color: #007bff;
 }
 
 /* Submit Button */
-.ask-question-page .submit-button {
+.submitButton {
   background-color: #007bff;
   color: white;
   padding: 10px 20px;
@@ -87,12 +82,12 @@
   cursor: pointer;
 }
 
-.ask-question-page .submit-button:hover {
+.submitButton:hover {
   background-color: #0056b3;
 }
 
 /* Success Message */
-.ask-question-page .success-message {
+.successMessage {
   margin-top: 15px;
   padding: 12px;
   background-color: #d4edda;
@@ -103,7 +98,7 @@
 }
 
 /* Error Message */
-.ask-question-page .error-message {
+.errorMessage {
   margin-top: 15px;
   padding: 12px;
   background-color: #f8d7da;
