@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import "./AskQuestion.css";
+import axios from "axios";
+import styles from "./AskQuestion.module.css";
 
 function AskQuestion() {
   const [title, setTitle] = useState("");
@@ -13,12 +14,15 @@ function AskQuestion() {
     setSuccess(false);
 
     try {
-      
       const token = localStorage.getItem("token");
 
       const res = await axios.post(
-        "http://localhost:5500/api/questions",
-        { title, description },
+        "http://localhost:5500/api/question",
+        {
+          title,
+          question_description: description,
+          tag: "",
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -39,8 +43,8 @@ function AskQuestion() {
   };
 
   return (
-    <div className="ask-question-page">
-      <section className="steps">
+    <div className={styles.askQuestionPage}>
+      <section className={styles.steps}>
         <h2>Steps to write a good question</h2>
         <ul>
           <li>Summarize your problem in a one-line title.</li>
@@ -50,13 +54,13 @@ function AskQuestion() {
         </ul>
       </section>
 
-      <section className="question-form">
-        <h3 className="Ask">Ask a Public Question </h3>
-        <div className="Go">
+      <section className={styles.questionForm}>
+        <h3 className={styles.ask}>Ask a Public Question</h3>
+        <div className={styles.go}>
           <p>Go to Question page</p>
         </div>
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
+          <div className={styles.formGroup}>
             <label htmlFor="title"></label>
             <input
               type="text"
@@ -68,7 +72,7 @@ function AskQuestion() {
             />
           </div>
 
-          <div className="form-group">
+          <div className={styles.formGroup}>
             <label htmlFor="description"></label>
             <textarea
               id="description"
@@ -80,18 +84,18 @@ function AskQuestion() {
             />
           </div>
 
-          <button type="submit" className="submit-button">
+          <button type="submit" className={styles.submitButton}>
             Post Your Question
           </button>
         </form>
 
         {success && (
-          <div className="success-message">
+          <div className={styles.successMessage}>
             ✅ Your question has been posted successfully!
           </div>
         )}
 
-        {error && <div className="error-message">{error}</div>}
+        {error && <div className={styles.errorMessage}>{error}</div>}
       </section>
     </div>
   );
