@@ -111,7 +111,7 @@ function Login() {
             <Link
               className={styles["text-pr"]}
               style={{ color: "orange" }}
-              to="/users/register"
+              to="/signup"
             >
               Sign up
             </Link>

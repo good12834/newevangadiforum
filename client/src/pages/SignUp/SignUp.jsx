@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import axios from "../../API/axios";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
-import "./SignUp.css";
+import { UserContext } from "../../context/UserProvider";
+import styles from "./SignUp.module.css";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -14,7 +15,7 @@ const Register = () => {
   });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
+  const [user, setUser] = useContext(UserContext);
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -49,15 +50,38 @@ const Register = () => {
     try {
       const res = await axios.post("/users/register", {
         username: formData.username,
-        firstname: formData.firstName, // ✅ FIXED: firstname (no underscore)
-        lastname: formData.lastName, // ✅ FIXED: lastname (no underscore)
+        firstname: formData.firstName,
+        lastname: formData.lastName,
         email: formData.email,
         password: formData.password,
       });
 
       if (res.status === 201) {
-        toast.success("Signup successful! Please log in.");
-        navigate("/login");
+        // After successful registration, automatically log the user in
+        try {
+          const loginRes = await axios.post("/users/login", {
+            email: formData.email,
+            password: formData.password,
+          });
+
+          if (loginRes.status === 200) {
+            // Save token to localStorage
+            localStorage.setItem("token", loginRes.data.token);
+
+            // Set user context
+            setUser({
+              user_name: loginRes.data.user?.username || formData.username,
+              user_id: loginRes.data.user?.id,
+            });
+
+            toast.success("Registration successful! Welcome!");
+            navigate("/home"); // Redirect to home page
+          }
+        } catch (loginError) {
+          // If auto-login fails, redirect to login page
+          toast.success("Registration successful! Please log in.");
+          navigate("/users/login");
+        }
       }
     } catch (error) {
       toast.error(error?.response?.data?.msg || "Signup failed.");
@@ -67,18 +91,18 @@ const Register = () => {
   };
 
   return (
-    <div className="wrapper-container">
+    <div className={styles.wrapperContainer}>
       {/* Registration Section */}
-      <div className="register-page">
-        <div className="register-box">
+      <div className={styles.registerPage}>
+        <div className={styles.registerBox}>
           <h2>Join the Network</h2>
           <form onSubmit={handleSubmit}>
-            <div className="name-fields">
+            <div className={styles.nameFields}>
               <input
                 type="text"
                 name="firstName"
                 placeholder="First Name"
-                className="input-field"
+                className={styles.inputField}
                 value={formData.firstName}
                 onChange={handleInputChange}
                 required
@@ -87,7 +111,7 @@ const Register = () => {
                 type="text"
                 name="lastName"
                 placeholder="Last Name"
-                className="input-field"
+                className={styles.inputField}
                 value={formData.lastName}
                 onChange={handleInputChange}
                 required
@@ -97,7 +121,7 @@ const Register = () => {
               type="text"
               name="username"
               placeholder="Username"
-              className="input-field"
+              className={styles.inputField}
               value={formData.username}
               onChange={handleInputChange}
               required
@@ -106,41 +130,45 @@ const Register = () => {
               type="email"
               name="email"
               placeholder="Email"
-              className="input-field"
+              className={styles.inputField}
               value={formData.email}
               onChange={handleInputChange}
               required
             />
-            <div className="password-wrapper">
+            <div className={styles.passwordWrapper}>
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Password"
-                className="input-field"
+                className={styles.inputField}
                 value={formData.password}
                 onChange={handleInputChange}
                 required
               />
               <button
                 type="button"
-                className="password-toggle"
+                className={styles.passwordToggle}
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? "Hide" : "Show"}
               </button>
             </div>
-            <button type="submit" className="submit-button" disabled={loading}>
+            <button
+              type="submit"
+              className={styles.submitButton}
+              disabled={loading}
+            >
               {loading ? "Signing up..." : "Sign Up"}
             </button>
           </form>
-          <p className="switch-text">
-            Already have an account? <Link to="/login">Login</Link>
+          <p className={styles.switchText}>
+            Already have an account? <Link to="/users/login">Login</Link>
           </p>
         </div>
       </div>
 
       {/* About container section */}
-      <div className="container">
+      <div className={styles.container}>
         <h3>About</h3>
         <h1>Evangadi Network</h1>
         <div>
@@ -155,8 +183,8 @@ const Register = () => {
             looking to meet mentors of your own, please start by joining the
             network here.
           </p>
-          <Link to="/howitworks">
-            <button className="button">HOW IT WORKS</button>
+          <Link to="/how-it-works">
+            <button className={styles.button}>HOW IT WORKS</button>
           </Link>
         </div>
       </div>

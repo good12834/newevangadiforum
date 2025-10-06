@@ -1,29 +1,31 @@
+import React from "react";
 import { Link } from "react-router-dom";
-import "./LandingPage.css";
+import styles from "./LandingPage.module.css";
 
 const LandingPage = () => {
-  // Mock questions array
-  const questions = [
-    { id: 1, text: "What is React?" },
-    { id: 2, text: "How does useEffect work?" },
-    { id: 3, text: "What is JSX?" },
-  ];
-
   return (
-    <div className="landing-page">
-      <h1>All Questions</h1>
-      {questions.length === 0 ? (
-        <p>No questions available yet.</p>
-      ) : (
-        <ul>
-          {questions.map((q) => (
-            <li key={q.id} className="question-item">
-              <p>{q.text}</p>
-              <Link to={`/questions/${q.id}`}>View Question</Link>
-            </li>
-          ))}
-        </ul>
-      )}
+    <div className={styles.landingPage}>
+      <div className={styles.textDiv}>
+        <h2>
+          Bypass the Industrial,
+          <br />
+          Dive into the Digital!
+        </h2>
+
+        <p>
+          Before us is a golden opportunity, demanding us to take a bold step
+          forward and join the new digital era.
+        </p>
+
+        <div className={styles.linkDiv}>
+          <Link to="/users/register" className={styles.createAccount}>
+            Create Account
+          </Link>
+          <Link to="/users/login" className={styles.signIn}>
+            Sign In
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };

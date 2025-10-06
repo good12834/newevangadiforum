@@ -5,6 +5,7 @@ const {
   register,
   login,
   checkUser,
+  forgetPassword,
 } = require("../controller/userController.js");
 const authMiddleware = require("../middleware/authMiddleware.js");
 
@@ -16,5 +17,7 @@ router.post("/login", login);
 
 // check user route
 router.get("/check", authMiddleware, checkUser);
+
+router.post("/forget-password", forgetPassword);
 
 module.exports = router;

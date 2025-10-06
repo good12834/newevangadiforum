@@ -97,4 +97,39 @@ async function checkUser(req, res) {
   res.status(StatusCodes.OK).json({ msg: "valid user", username, userid });
 }
 
-module.exports = { register, login, checkUser };
+async function forgetPassword(req, res) {
+  const { email } = req.body;
+
+  if (!email) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ msg: "Email is required" });
+  }
+
+  try {
+    const [user] = await dbConnection.query(
+      "SELECT user_id FROM userTable WHERE email = ?",
+      [email]
+    );
+
+    if (user.length === 0) {
+      // Don't reveal if email exists or not for security
+      return res.status(StatusCodes.OK).json({
+        msg: "If the email exists, a reset link has been sent",
+      });
+    }
+
+    // TODO: Generate reset token and send email
+    // For now, just return success message
+    return res.status(StatusCodes.OK).json({
+      msg: "If the email exists, a reset link has been sent",
+    });
+  } catch (error) {
+    console.log(error.message);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      msg: "Something went wrong, try again later!",
+    });
+  }
+}
+
+module.exports = { register, login, checkUser, forgetPassword };
