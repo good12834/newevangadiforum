@@ -1,0 +1,284 @@
+/* Header.module.css */
+
+/* Header Container */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  background: #ffffff;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 5%;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+/* Logo Section */
+.logoContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.logoContainer:hover {
+  transform: scale(1.02);
+}
+
+.logoImage {
+  height: 40px;
+  width: auto;
+}
+
+.logoText {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ff8500;
+  letter-spacing: -0.5px;
+}
+
+/* Navigation */
+.nav {
+  display: flex;
+  align-items: center;
+}
+
+.navList {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navLink {
+  color: #333;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 8px 0;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.navLink:hover {
+  color: #ff8500;
+}
+
+.navLink::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #ff8500;
+  transition: width 0.3s ease;
+}
+
+.navLink:hover::after {
+  width: 100%;
+}
+
+/* Ask Question Link */
+.askQuestionLink {
+  background: #ff8500;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  border: 2px solid #ff8500;
+}
+
+.askQuestionLink:hover {
+  background: transparent;
+  color: #ff8500;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 133, 0, 0.3);
+}
+
+/* Sign In Button */
+.signInBtn {
+  background: #ff8500;
+  color: white;
+  padding: 12px 30px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  border: 2px solid #ff8500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.signInBtn:hover {
+  background: transparent;
+  color: #ff8500;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 133, 0, 0.3);
+}
+
+/* Logout Button */
+.logoutBtn {
+  background: transparent;
+  color: #666;
+  border: 2px solid #ddd;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logoutBtn:hover {
+  border-color: #ff8500;
+  color: #ff8500;
+  transform: translateY(-2px);
+}
+
+/* Mobile Menu Button */
+.menuButton {
+  display: none;
+  background: none;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  padding: 5px;
+  transition: color 0.3s ease;
+}
+
+.menuButton:hover {
+  color: #ff8500;
+}
+
+/* Overlay */
+.overlay {
+  display: none;
+  position: fixed;
+  top: 70px;
+  left: 0;
+  width: 100%;
+  height: calc(100vh - 70px);
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .header {
+    padding: 0 20px;
+    height: 60px;
+  }
+
+  .menuButton {
+    display: block;
+  }
+
+  .nav {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    background: white;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .navOpen {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .navList {
+    flex-direction: column;
+    gap: 0;
+    padding: 20px 0;
+  }
+
+  .navList li {
+    width: 100%;
+    text-align: center;
+  }
+
+  .navLink,
+  .askQuestionLink,
+  .signInBtn,
+  .logoutBtn {
+    display: block;
+    padding: 15px 20px;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    width: 100%;
+    text-align: center;
+  }
+
+  .askQuestionLink,
+  .signInBtn {
+    margin: 10px 20px;
+    border-radius: 25px;
+    width: calc(100% - 40px);
+  }
+
+  .logoutBtn {
+    border: none;
+    border-top: 1px solid #eee;
+  }
+
+  .overlay {
+    display: block;
+  }
+
+  .logoText {
+    font-size: 1.3rem;
+  }
+
+  .logoImage {
+    height: 35px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 0 15px;
+  }
+
+  .logoText {
+    font-size: 1.1rem;
+  }
+
+  .logoImage {
+    height: 30px;
+  }
+}
+
+/* Scrolled State */
+.header.scrolled {
+  height: 60px;
+  box-shadow: 0 2px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Active Link State */
+.navLink.active {
+  color: #ff8500;
+  font-weight: 600;
+}
+
+.navLink.active::after {
+  width: 100%;
+}
