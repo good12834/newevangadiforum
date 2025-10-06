@@ -44,11 +44,11 @@ function Header() {
       </div>
 
       {/* Navigation */}
-      <nav className={${styles.nav} ${menuOpen ? styles.navOpen : ''}}>
+      <nav className={`${styles.nav} ${menuOpen ? styles.navOpen : ""}`}>
         <ul className={styles.navList}>
           <li>
-            <Link 
-              to={token ? "/home" : "/"} 
+            <Link
+              to={token ? "/home" : "/"}
               className={styles.navLink}
               onClick={closeMenu}
             >
@@ -56,20 +56,20 @@ function Header() {
             </Link>
           </li>
           <li>
-            <Link 
-              to="/how-it-works" 
+            <Link
+              to="/how-it-works"
               className={styles.navLink}
               onClick={closeMenu}
             >
               How it Works
             </Link>
           </li>
-          
+
           {token ? (
             <>
               <li>
-                <Link 
-                  to="/ask" 
+                <Link
+                  to="/ask"
                   className={styles.askQuestionLink}
                   onClick={closeMenu}
                 >
@@ -77,18 +77,15 @@ function Header() {
                 </Link>
               </li>
               <li>
-                <button 
-                  onClick={handleLogOut} 
-                  className={styles.logoutBtn}
-                >
+                <button onClick={handleLogOut} className={styles.logoutBtn}>
                   Log Out
                 </button>
               </li>
             </>
           ) : (
             <li>
-              <Link 
-                to="/login" 
+              <Link
+                to="/login"
                 className={styles.signInBtn}
                 onClick={closeMenu}
               >

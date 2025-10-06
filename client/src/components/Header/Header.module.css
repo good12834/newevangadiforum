@@ -38,7 +38,7 @@
 .logoText {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #ff8500;
+  color: #FF8500;
   letter-spacing: -0.5px;
 }
 
@@ -68,17 +68,17 @@
 }
 
 .navLink:hover {
-  color: #ff8500;
+  color: #FF8500;
 }
 
 .navLink::after {
-  content: "";
+  content: '';
   position: absolute;
   bottom: 0;
   left: 0;
   width: 0;
   height: 2px;
-  background: #ff8500;
+  background: #FF8500;
   transition: width 0.3s ease;
 }
 
@@ -88,7 +88,7 @@
 
 /* Ask Question Link */
 .askQuestionLink {
-  background: #ff8500;
+  background: #FF8500;
   color: white;
   padding: 10px 20px;
   border-radius: 25px;
@@ -96,19 +96,19 @@
   font-weight: 600;
   font-size: 0.9rem;
   transition: all 0.3s ease;
-  border: 2px solid #ff8500;
+  border: 2px solid #FF8500;
 }
 
 .askQuestionLink:hover {
   background: transparent;
-  color: #ff8500;
+  color: #FF8500;
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(255, 133, 0, 0.3);
 }
 
 /* Sign In Button */
 .signInBtn {
-  background: #ff8500;
+  background: #FF8500;
   color: white;
   padding: 12px 30px;
   border-radius: 25px;
@@ -116,14 +116,14 @@
   font-weight: 600;
   font-size: 0.9rem;
   transition: all 0.3s ease;
-  border: 2px solid #ff8500;
+  border: 2px solid #FF8500;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .signInBtn:hover {
   background: transparent;
-  color: #ff8500;
+  color: #FF8500;
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(255, 133, 0, 0.3);
 }
@@ -142,8 +142,8 @@
 }
 
 .logoutBtn:hover {
-  border-color: #ff8500;
-  color: #ff8500;
+  border-color: #FF8500;
+  color: #FF8500;
   transform: translateY(-2px);
 }
 
@@ -159,7 +159,7 @@
 }
 
 .menuButton:hover {
-  color: #ff8500;
+  color: #FF8500;
 }
 
 /* Overlay */
@@ -275,7 +275,7 @@
 
 /* Active Link State */
 .navLink.active {
-  color: #ff8500;
+  color: #FF8500;
   font-weight: 600;
 }
 
