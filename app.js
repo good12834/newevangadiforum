@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const port = 5500;
+const port = process.env.PORT || 5500;
 const cors = require("cors");
 
 // Enable CORS for all routes
