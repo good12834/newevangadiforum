@@ -25,7 +25,10 @@
 .register-box {
   background: #fff;
   border-radius: 10px;
-  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+ box-shadow:
+  5px 0 25px rgba(0, 0, 0, 0.15),  
+  -5px 0 25px rgba(0, 0, 0, 0.15); 
+              
   padding: 40px;
   width: 100%;
   max-width: 500px;
