@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../../context/UserProvider";
 import { QuestionContext } from "../../context/QuestionProvider";
-import axiosInstance from "../../API/axios";
+import axios from "axios"; // ✅ Use axios directly
 import styles from "./QuestionDetail.module.css";
 import { FaUserCircle } from "react-icons/fa";
 import { ClipLoader } from "react-spinners";
@@ -23,24 +23,46 @@ const QuestionDetail = () => {
     const fetchQuestionAndAnswers = async () => {
       try {
         setLoading(true);
+        const token = localStorage.getItem("token");
 
-        // Fetch question details if not in context
+        console.log("Fetching question:", question_id);
+
+        // Fetch question details
+        const questionResponse = await axios.get(
+          `http://localhost:5500/api/question/${question_id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        console.log("Question response:", questionResponse.data);
+
+        // Add question to context if not already there
         if (!questions.find((q) => q.question_id == question_id)) {
-          const questionResponse = await axiosInstance.get(
-            `/question/${question_id}`
-          );
           setQuestions((prev) => [...prev, questionResponse.data]);
         }
 
-        // Fetch answers for this question
-        const answersResponse = await axiosInstance.get("/answers");
+        // Fetch all answers
+        const answersResponse = await axios.get(
+          "http://localhost:5500/api/answers/",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        console.log("All answers:", answersResponse.data);
+
+        // Filter answers for this specific question
         const questionAnswers =
           answersResponse.data.answers?.filter(
             (answer) => answer.question_id == question_id
           ) || [];
+
+        console.log("Filtered answers:", questionAnswers);
         setAnswers(questionAnswers);
       } catch (error) {
         console.error("Error fetching data:", error);
+        console.error("Error response:", error.response);
       } finally {
         setLoading(false);
       }
@@ -65,11 +87,10 @@ const QuestionDetail = () => {
     setAnswerLoading(true);
 
     try {
-      const response = await axiosInstance.post(
-        `/answers/${question_id}`,
+      const response = await axios.post(
+        `http://localhost:5500/api/answers/${question_id}`,
         {
           answer: newAnswer,
-          user_id: user.user_id,
         },
         {
           headers: {
@@ -79,22 +100,29 @@ const QuestionDetail = () => {
         }
       );
 
-      if (response.status === 201) {
-        // Add new answer to the list
-        const newAnswerObj = {
-          answer_id: Date.now(), // Temporary ID
-          answer: newAnswer,
-          user_name: user.user_name,
-          user_id: user.user_id,
-          created_at: new Date().toISOString(),
-        };
+      console.log("Answer post response:", response.data);
 
-        setAnswers((prev) => [newAnswerObj, ...prev]);
+      if (response.status === 201) {
+        // Refresh answers after posting
+        const answersResponse = await axios.get(
+          "http://localhost:5500/api/answers/",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        const questionAnswers =
+          answersResponse.data.answers?.filter(
+            (answer) => answer.question_id == question_id
+          ) || [];
+
+        setAnswers(questionAnswers);
         setNewAnswer("");
         alert("Answer posted successfully!");
       }
     } catch (error) {
       console.error("Error posting answer:", error);
+      console.error("Error response:", error.response);
       alert("Failed to post answer. Please try again.");
     } finally {
       setAnswerLoading(false);
@@ -113,12 +141,9 @@ const QuestionDetail = () => {
     const token = localStorage.getItem("token");
 
     try {
-      await axiosInstance.delete(`/answers/${answer_id}`, {
+      await axios.delete(`http://localhost:5500/api/answers/${answer_id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
-        },
-        data: {
-          user_id: user.user_id,
         },
       });
 
@@ -234,7 +259,7 @@ const QuestionDetail = () => {
             </div>
             <div className={styles.answerMeta}>
               <span className={styles.answerDate}>
-                Answered on {new Date(answer.created_at).toLocaleDateString()}
+                Answered on {new Date(answer.createdAt).toLocaleDateString()}
               </span>
             </div>
           </div>

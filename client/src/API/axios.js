@@ -3,6 +3,8 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
   baseURL: "http://localhost:5500/api", // Make sure this is correct
+  // baseURL: "https://forumbackend.abdisaketema.com/api", // Make sure this is correct
+
   timeout: 10000, // Add timeout
 });
 
