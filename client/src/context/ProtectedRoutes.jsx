@@ -1,5 +1,16 @@
-const ProtectedRoutes = () => {
-  return <div>ProtectedRoutes</div>;
+import React, { useContext } from "react";
+import { UserContext } from "./UserProvider";
+import { Navigate } from "react-router-dom";
+
+const ProtectedRoute = ({ children }) => {
+  const [user] = useContext(UserContext);
+
+  // Simple check - if no user, redirect to login
+  if (!user) {
+    return <Navigate to="/login" replace />; 
+  }
+
+  return children;
 };
 
-export default ProtectedRoutes;
+export default ProtectedRoute;

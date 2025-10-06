@@ -1,6 +1,5 @@
 import { createContext, useState, useEffect } from "react";
 
-// Initialize context
 export const UserContext = createContext();
 
 export function UserProvider({ children }) {
@@ -9,7 +8,9 @@ export function UserProvider({ children }) {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      setUser({ token }); // Set the user token if available
+      // You need to fetch user data here or set it from login response
+      // For now, we'll set a placeholder until login sets the proper user data
+      setUser({ token });
     }
   }, []);
 
@@ -19,16 +20,3 @@ export function UserProvider({ children }) {
     </UserContext.Provider>
   );
 }
-
-// import React, { createContext, useState } from "react";
-
-// export const UserContext = createContext(null);
-
-// export const UserProvider = ({ children }) => {
-//   const [user, setUser] = useState(null);
-//   return (
-//     <UserContext.Provider value={[user, setUser]}>
-//       {children}
-//     </UserContext.Provider>
-//   );
-// };

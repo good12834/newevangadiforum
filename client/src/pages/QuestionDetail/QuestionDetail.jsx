@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import "./QuestionDetail.css";
+import styles from "./QuestionDetail.module.css"; // ✅ Updated import
 
 const QuestionDetail = () => {
   const { questionId } = useParams();
@@ -16,36 +16,36 @@ const QuestionDetail = () => {
   };
 
   return (
-    <div className="question-container">
-      <header className="nav-bar">
-        <h2 className="logo">EVANGADI</h2>
+    <div className={styles.questionContainer}>
+      <header className={styles.navBar}>
+        <h2 className={styles.logo}>EVANGADI</h2>
         <nav>
           <Link to="/">Home</Link>
-          <button className="logout-btn">LogOut</button>
+          <button className={styles.logoutBtn}>LogOut</button>
         </nav>
       </header>
 
-      <div className="content">
-        <div className="question-section">
+      <div className={styles.content}>
+        <div className={styles.questionSection}>
           <h3>Question</h3>
-          <p className="question-text">{question.text}</p>
-          <small className="sub-text">{question.subText}</small>
+          <p className={styles.questionText}>{question.text}</p>
+          <small className={styles.subText}>{question.subText}</small>
         </div>
 
-        <div className="answer-section">
+        <div className={styles.answerSection}>
           <h3>Answer From The Community</h3>
           {question.answers.length > 0 ? (
             question.answers.map((ans, index) => (
-              <div className="answer-card" key={index}>
-                <div className="user-avatar">
+              <div className={styles.answerCard} key={index}>
+                <div className={styles.userAvatar}>
                   <img
                     src="https://www.w3schools.com/howto/img_avatar.png"
                     alt="user avatar"
                   />
                 </div>
                 <div>
-                  <p className="username">{ans.username}</p>
-                  <p className="answer-text">{ans.text}</p>
+                  <p className={styles.username}>{ans.username}</p>
+                  <p className={styles.answerText}>{ans.text}</p>
                 </div>
               </div>
             ))
@@ -54,13 +54,13 @@ const QuestionDetail = () => {
           )}
         </div>
 
-        <div className="answer-form">
+        <div className={styles.answerForm}>
           <h3>Answer The Top Question</h3>
           <textarea
             placeholder="Your Answer..."
-            className="answer-input"
+            className={styles.answerInput}
           ></textarea>
-          <button className="post-btn">Post Your Answer</button>
+          <button className={styles.postBtn}>Post Your Answer</button>
         </div>
       </div>
     </div>
