@@ -48,7 +48,7 @@ const Register = () => {
     }
 
     try {
-      const res = await axios.post("/users/register", {
+      const res = await axios.post("/signup", {
         username: formData.username,
         firstname: formData.firstName,
         lastname: formData.lastName,
@@ -59,7 +59,7 @@ const Register = () => {
       if (res.status === 201) {
         // After successful registration, automatically log the user in
         try {
-          const loginRes = await axios.post("/users/login", {
+          const loginRes = await axios.post("/login", {
             email: formData.email,
             password: formData.password,
           });
@@ -80,7 +80,7 @@ const Register = () => {
         } catch (loginError) {
           // If auto-login fails, redirect to login page
           toast.success("Registration successful! Please log in.");
-          navigate("/users/login");
+          navigate("/login");
         }
       }
     } catch (error) {
@@ -162,7 +162,7 @@ const Register = () => {
             </button>
           </form>
           <p className={styles.switchText}>
-            Already have an account? <Link to="/users/login">Login</Link>
+            Already have an account? <Link to="/login">Login</Link>
           </p>
         </div>
       </div>

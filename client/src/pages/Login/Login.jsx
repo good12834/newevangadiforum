@@ -37,7 +37,7 @@ function Login() {
     }
 
     try {
-      const response = await axiosInstance.post("/users/login", formData);
+      const response = await axiosInstance.post("/login", formData);
       setSuccessMessage(response.data.msg);
 
       localStorage.setItem("token", response.data.token);

@@ -18,10 +18,10 @@ const LandingPage = () => {
         </p>
 
         <div className={styles.linkDiv}>
-          <Link to="/users/register" className={styles.createAccount}>
+          <Link to="/signup" className={styles.createAccount}>
             Create Account
           </Link>
-          <Link to="/users/login" className={styles.signIn}>
+          <Link to="/login" className={styles.signIn}>
             Sign In
           </Link>
         </div>
