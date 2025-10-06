@@ -1,32 +1,25 @@
 const express = require("express");
-const app = express();
-const port = process.env.PORT || 5500;
 const cors = require("cors");
-
-// Enable CORS for all routes
-app.use(cors());
-
-// db connection
 const dbConnection = require("./db/dbConfig");
-
 const createTables = require("./db/dbSchema");
 
-// JSON middleware to extract json data
+const userRoutes = require("./routes/userRoutes");
+const questionRoutes = require("./routes/questionRoutes");
+const answerRoutes = require("./routes/answerRoute");
+
+const app = express();
+const port = process.env.PORT || 5500;
+
+// Middleware
+app.use(cors());
 app.use(express.json());
 
-// User route middleware file
-const userRoutes = require("./routes/userRoutes");
+// Routes
 app.use("/api/users", userRoutes);
-
-// Question router middleware file
-const questionRoutes = require("./routes/questionRoutes");
 app.use("/api/question", questionRoutes);
-
-// Answer route middleware file
-const answerRoutes = require("./routes/answerRoute");
 app.use("/api/answers", answerRoutes);
 
-// Create tables with an endpoint
+// Endpoint to create tables
 app.get("/create-table", createTables);
 
 // Root route
@@ -35,19 +28,24 @@ app.get("/", (req, res) => {
 });
 
 // 404 handler
-app.use("/", (req, res) => {
+app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
 
-async function start() {
+// Start server
+async function startServer() {
   try {
-    const result = await dbConnection.execute("select 'test'");
+    // Test database connection
+    await dbConnection.execute("select 'test'");
     console.log("Database connection established");
-    app.listen(port);
-    console.log(`Server listening on port ${port}`);
   } catch (error) {
-    console.log(error.message);
+    console.log("Database connection failed:", error.message);
+  } finally {
+    // Always start the server to avoid Render killing the process
+    app.listen(port, () => {
+      console.log(`Server listening on port ${port}`);
+    });
   }
 }
 
-start();
+startServer();
