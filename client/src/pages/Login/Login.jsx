@@ -37,7 +37,7 @@ function Login() {
     }
 
     try {
-      const response = await axiosInstance.post("/login", formData);
+      const response = await axiosInstance.post("/users/login", formData);
       setSuccessMessage(response.data.msg);
 
       localStorage.setItem("token", response.data.token);
@@ -111,7 +111,7 @@ function Login() {
             <Link
               className={styles["text-pr"]}
               style={{ color: "orange" }}
-              to="/signup"
+              to="/users/register"
             >
               Sign up
             </Link>

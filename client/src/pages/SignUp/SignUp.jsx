@@ -48,7 +48,7 @@ const Register = () => {
     }
 
     try {
-      const res = await axios.post("/signup", {
+      const res = await axios.post("/users/register", {
         username: formData.username,
         firstname: formData.firstName,
         lastname: formData.lastName,
@@ -59,7 +59,7 @@ const Register = () => {
       if (res.status === 201) {
         // After successful registration, automatically log the user in
         try {
-          const loginRes = await axios.post("/login", {
+          const loginRes = await axios.post("/users/login", {
             email: formData.email,
             password: formData.password,
           });

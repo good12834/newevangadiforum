@@ -1,14 +1,14 @@
 import React, { useRef, useState } from "react";
-import styles from "./ForgetPassword.module.css"; // ✅ Fixed import name
-import { Link, useNavigate } from "react-router-dom";
+import styles from "./ForgetPassword.module.css";
+import { Link } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
-import axiosInstance from "../../API/axios";
+import axios from "axios"; // Try using axios directly for testing
 
 function ForgetPassword() {
   const emailDom = useRef(null);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -20,19 +20,43 @@ function ForgetPassword() {
     }
 
     setLoading(true);
-    try {
-      const response = await axiosInstance.post("/users/forget-password", {
-        email: emailValue,
-      });
+    setError("");
+    setSuccess("");
 
-      setLoading(false);
-      alert(response.data.msg);
-    } catch (err) {
-      setLoading(false);
-      setError(
-        err.response?.data?.msg || "Something went wrong, please try again."
+    try {
+      console.log("🚀 Sending request to /users/forget-password");
+
+      // Option 1: Use axios directly for testing
+      const response = await axios.post(
+        "http://localhost:5500/api/users/forget-password",
+        { email: emailValue },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
-      console.error("Error:", err.response?.data?.msg || err.message);
+
+      console.log("✅ Success! Response:", response.data);
+      setSuccess(response.data.msg);
+      emailDom.current.value = "";
+    } catch (err) {
+      console.error("❌ Full error object:", err);
+
+      if (err.code === "NETWORK_ERROR" || err.code === "ECONNREFUSED") {
+        setError(
+          "Cannot connect to server. Make sure backend is running on port 5500."
+        );
+      } else if (err.response?.status === 404) {
+        setError("Endpoint not found. Check backend routes.");
+      } else {
+        setError(
+          err.response?.data?.msg ||
+            "Something went wrong. Check console for details."
+        );
+      }
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -51,8 +75,20 @@ function ForgetPassword() {
             type="email"
             placeholder="Email address"
             className={error ? styles.inputError : styles.input}
+            disabled={loading}
           />
-          {error && <p className={styles.error}>{error}</p>}
+
+          {error && (
+            <div className={styles.error}>
+              <strong>Error:</strong> {error}
+            </div>
+          )}
+
+          {success && (
+            <div className={styles.success}>
+              <strong>Success:</strong> {success}
+            </div>
+          )}
 
           <button className={styles.button} type="submit" disabled={loading}>
             {loading ? (
@@ -68,13 +104,9 @@ function ForgetPassword() {
 
         <div className={styles.linkContainer}>
           <Link to="/login" className={styles.link}>
-            {" "}
-            {/* ✅ Fixed route */}
             Already have an account?
           </Link>
           <Link to="/signup" className={styles.link}>
-            {" "}
-            {/* ✅ Fixed route */}
             Don't have an account?
           </Link>
         </div>

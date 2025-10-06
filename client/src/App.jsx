@@ -35,7 +35,7 @@ function App() {
     if (!token || isTokenExpired(token)) {
       localStorage.removeItem("token");
       setUser(null);
-      navigate("/login");
+      navigate("/users/login");
       return;
     }
 
@@ -50,7 +50,7 @@ function App() {
       console.error("Authentication error:", error.message);
       setUser(null);
       setError("Failed to authenticate. Please log in again.");
-      navigate("/login");
+      navigate("/users/login");
     } finally {
       setLoading(false);
     }
@@ -83,11 +83,11 @@ function App() {
             element={token ? <Navigate to="/home" /> : <LandingPage />}
           />
           <Route
-            path="/login"
+            path="/users/login"
             element={token ? <Navigate to="/home" /> : <Login />}
           />
           <Route
-            path="/signup"
+            path="/users/register"
             element={token ? <Navigate to="/home" /> : <SignUp />}
           />
           <Route

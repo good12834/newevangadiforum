@@ -15,7 +15,7 @@ function Header() {
   const handleLogOut = () => {
     localStorage.removeItem("token");
     setUser(null);
-    navigate("/login");
+    navigate("/users/login");
     setMenuOpen(false);
   };
 
@@ -94,7 +94,7 @@ function Header() {
             ) : (
               <li className={styles.signInContainer}>
                 <Link
-                  to="/login"
+                  to="/users/login"
                   className={styles.signInBtn}
                   onClick={closeMenu}
                 >
