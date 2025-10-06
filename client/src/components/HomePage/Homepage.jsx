@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
 import { IoIosArrowDropright } from "react-icons/io";
-import axiosInstance from "../../API/axios";
+import axios from "axios"; // ✅ Use axios directly
 import { QuestionContext } from "../../context/QuestionProvider";
 import { UserContext } from "../../context/UserProvider";
 import DOMPurify from "dompurify";
@@ -20,23 +20,22 @@ const HomePage = () => {
   const questionsPerPage = 7;
   const navigate = useNavigate();
 
-  // Add detailed error logging in your useEffect
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        console.log("Making API call to /questions/all-questions");
-        const response = await axiosInstance.get("/questions/all-questions", {
+        console.log("Fetching questions...");
+        const response = await axios.get("http://localhost:5500/api/question", {
+          // ✅ Fixed endpoint
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log("API response:", response.data);
-        setQuestions(response.data.questions);
+        console.log("Questions data:", response.data);
+        setQuestions(response.data); // ✅ Direct array, no .questions property
       } catch (err) {
-        console.error("API Error details:", err);
-        console.error("Error response:", err.response);
+        console.error("API Error:", err);
         setError(
-          err.response?.data?.message ||
+          err.response?.data?.msg ||
             "Failed to load questions. Please try again."
         );
       } finally {
@@ -52,6 +51,7 @@ const HomePage = () => {
     }
   }, [token, setQuestions]);
 
+  // Rest of your HomePage component remains the same...
   const handleDelete = async (question_id, e) => {
     e.stopPropagation();
 
@@ -67,9 +67,9 @@ const HomePage = () => {
     if (!confirmDelete) return;
 
     try {
-      await axiosInstance.delete(`/questions/delete/${question_id}`, {
+      await axios.delete(`http://localhost:5500/api/question/${question_id}`, {
         headers: { Authorization: `Bearer ${token}` },
-        data: { user_id: user.user_id, question_id },
+        data: { user_id: user.user_id },
       });
 
       setQuestions((prevQuestions) =>
@@ -85,7 +85,9 @@ const HomePage = () => {
   const filteredQuestions = questions.filter(
     (question) =>
       question.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      question.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      question.question_description
+        ?.toLowerCase()
+        .includes(searchQuery.toLowerCase())
   );
 
   // Pagination
@@ -192,7 +194,7 @@ const HomePage = () => {
                     className={styles.description}
                     dangerouslySetInnerHTML={{
                       __html: DOMPurify.sanitize(
-                        question?.question_description
+                        question?.question_description || ""
                       ),
                     }}
                   />
@@ -200,17 +202,15 @@ const HomePage = () => {
                   {/* Meta Information */}
                   <div className={styles.meta}>
                     {/* Tags */}
-                    <div className={styles.tags}>
-                      {question?.tags?.map((tag) => (
-                        <span key={tag} className={styles.tag}>
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
+                    {question.tag && (
+                      <div className={styles.tags}>
+                        <span className={styles.tag}>{question.tag}</span>
+                      </div>
+                    )}
 
                     {/* Date */}
                     <div className={styles.date}>
-                      Asked {formatDate(question.created_at)}
+                      Asked {formatDate(question.createdAt)}
                     </div>
 
                     {/* Action Buttons */}

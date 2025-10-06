@@ -1,6 +1,6 @@
 .container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #FF8500 0%, #e55a00 100%);
   padding: 20px;
 }
 
@@ -73,7 +73,7 @@
 }
 
 .stepNumber {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #FF8500, #e55a00);
   color: white;
   width: 30px;
   height: 30px;
@@ -142,8 +142,8 @@
 .input:focus,
 .textarea:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #FF8500;
+  box-shadow: 0 0 0 3px rgba(255, 133, 0, 0.1);
 }
 
 .textarea {
@@ -159,7 +159,7 @@
 }
 
 .submitButton {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #FF8500, #e55a00);
   color: white;
   border: none;
   padding: 15px 30px;
@@ -176,7 +176,8 @@
 
 .submitButton:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 5px 15px rgba(255, 133, 0, 0.4);
+  background: linear-gradient(135deg, #e55a00, #FF8500);
 }
 
 .submitButton:disabled {
@@ -249,7 +250,7 @@
 }
 
 .viewQuestions {
-  color: #276749;
+  color: #FF8500;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.9rem;
@@ -257,6 +258,7 @@
 
 .viewQuestions:hover {
   text-decoration: underline;
+  color: #e55a00;
 }
 
 /* Responsive Design */
