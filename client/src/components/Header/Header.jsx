@@ -31,74 +31,86 @@ function Header() {
   const closeMenu = () => setMenuOpen(false);
 
   return (
-    <header className={styles.header}>
-      {/* Logo */}
-      <div className={styles.logoContainer} onClick={handleLogoClick}>
-        <img src={Logo} alt="Evangadi Logo" className={styles.logoImage} />
-        <span className={styles.logoText}>EVANGADI</span>
-      </div>
+    <>
+      <header className={styles.header}>
+        {/* Logo - Only image, no text */}
+        <div className={styles.logoContainer} onClick={handleLogoClick}>
+          <img src={Logo} alt="Evangadi Logo" className={styles.logoImage} />
+        </div>
 
-      {/* Mobile Menu Button */}
-      <div className={styles.menuButton} onClick={() => setMenuOpen(!menuOpen)}>
-        {menuOpen ? <FiX size={28} /> : <FiMenu size={28} />}
-      </div>
+        {/* Mobile Menu Button */}
+        <div
+          className={styles.menuButton}
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          {menuOpen ? <FiX size={28} /> : <FiMenu size={28} />}
+        </div>
 
-      {/* Navigation */}
-      <nav className={`${styles.nav} ${menuOpen ? styles.navOpen : ""}`}>
-        <ul className={styles.navList}>
-          <li>
-            <Link
-              to={token ? "/home" : "/"}
-              className={styles.navLink}
-              onClick={closeMenu}
-            >
-              Home
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/how-it-works"
-              className={styles.navLink}
-              onClick={closeMenu}
-            >
-              How it Works
-            </Link>
-          </li>
-
-          {token ? (
-            <>
-              <li>
-                <Link
-                  to="/ask"
-                  className={styles.askQuestionLink}
-                  onClick={closeMenu}
-                >
-                  Ask Question
-                </Link>
-              </li>
-              <li>
-                <button onClick={handleLogOut} className={styles.logoutBtn}>
-                  Log Out
-                </button>
-              </li>
-            </>
-          ) : (
+        {/* Navigation */}
+        <nav className={`${styles.nav} ${menuOpen ? styles.navOpen : ""}`}>
+          <ul className={styles.navList}>
             <li>
               <Link
-                to="/login"
-                className={styles.signInBtn}
+                to={token ? "/home" : "/"}
+                className={`${styles.navLink} ${
+                  location.pathname === "/" || location.pathname === "/home"
+                    ? styles.active
+                    : ""
+                }`}
                 onClick={closeMenu}
               >
-                SIGN IN
+                Home
               </Link>
             </li>
-          )}
-        </ul>
-      </nav>
+            <li>
+              <Link
+                to="/how-it-works"
+                className={`${styles.navLink} ${
+                  location.pathname === "/how-it-works" ? styles.active : ""
+                }`}
+                onClick={closeMenu}
+              >
+                How it Works
+              </Link>
+            </li>
 
-      {/* Overlay for mobile */}
-      {menuOpen && <div className={styles.overlay} onClick={closeMenu} />}
-    </header>
+            {token ? (
+              <>
+                <li>
+                  <Link
+                    to="/ask"
+                    className={styles.askQuestionLink}
+                    onClick={closeMenu}
+                  >
+                    Ask Question
+                  </Link>
+                </li>
+                <li>
+                  <button onClick={handleLogOut} className={styles.logoutBtn}>
+                    Log Out
+                  </button>
+                </li>
+              </>
+            ) : (
+              <li className={styles.signInContainer}>
+                <Link
+                  to="/login"
+                  className={styles.signInBtn}
+                  onClick={closeMenu}
+                >
+                  SIGN IN
+                </Link>
+              </li>
+            )}
+          </ul>
+        </nav>
+
+        {/* Overlay for mobile */}
+        {menuOpen && <div className={styles.overlay} onClick={closeMenu} />}
+      </header>
+      {/* Add spacing to prevent content from being hidden behind fixed header */}
+      <div className={styles.headerSpacer}></div>
+    </>
   );
 }
 

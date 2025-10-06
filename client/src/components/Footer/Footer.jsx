@@ -1,5 +1,5 @@
 import React from "react";
-import Logo from "../../assets/images/DarkLogo.png";
+import Logo from "../../assets/images/lightLogo.png";
 import styles from "./Footer.module.css";
 import { FaFacebook, FaInstagram, FaYoutube, FaLink } from "react-icons/fa";
 
@@ -15,7 +15,6 @@ function Footer() {
           <div className={styles.brandSection}>
             <div className={styles.logoContainer}>
               <img src={Logo} alt="Evangadi Networks" className={styles.logo} />
-              <span className={styles.brandName}>EVANGADI</span>
             </div>
             <p className={styles.tagline}>
               Connecting learners and professionals through knowledge sharing
