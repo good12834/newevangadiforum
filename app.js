@@ -24,7 +24,7 @@ app.get("/create-table", createTables);
 
 // Root route
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to Q&A Platform API" });
+  res.json({ message: "Welcome to Evangadi Forum backend" });
 });
 
 // 404 handler
