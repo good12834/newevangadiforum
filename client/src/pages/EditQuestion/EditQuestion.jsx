@@ -8,6 +8,7 @@ import { UserContext } from "../../context/UserProvider";
 import DOMPurify from "dompurify";
 import "quill/dist/quill.snow.css";
 import Quill from "quill";
+import axiosInstance from "../../API/axios";
 
 const EditQuestion = () => {
   const { question_id } = useParams();
@@ -38,12 +39,8 @@ const EditQuestion = () => {
         let questionData;
 
         if (!question) {
-          const response = await axios.get(
-            `http://localhost:5500/api/question/${question_id}`,
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
+          const response = await axiosInstance.get(`/question/${question_id}`);
+
           questionData = response.data;
           setQuestions((prev) => [...prev, questionData]);
         } else {
@@ -111,13 +108,7 @@ const EditQuestion = () => {
         tag: data.tag || "",
       };
 
-      await axios.put(
-        `http://localhost:5500/api/question/${question_id}`,
-        updatedQuestion,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      await axiosInstance.put(`/question/${question_id}`, updatedQuestion);
 
       // Update local state
       setQuestions((prev) =>

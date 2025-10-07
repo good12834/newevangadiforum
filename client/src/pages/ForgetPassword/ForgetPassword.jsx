@@ -3,6 +3,7 @@ import styles from "./ForgetPassword.module.css";
 import { Link } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 import axios from "axios"; // Try using axios directly for testing
+import axiosInstance from "../../API/axios";
 
 function ForgetPassword() {
   const emailDom = useRef(null);
@@ -26,16 +27,9 @@ function ForgetPassword() {
     try {
       console.log("🚀 Sending request to /users/forget-password");
 
-      // Option 1: Use axios directly for testing
-      const response = await axios.post(
-        "http://localhost:5500/api/users/forget-password",
-        { email: emailValue },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axiosInstance.post("/users/forget-password", {
+        email: emailValue,
+      });
 
       console.log("✅ Success! Response:", response.data);
       setSuccess(response.data.msg);

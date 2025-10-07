@@ -4,6 +4,7 @@ import axios from "axios"; // ✅ Use axios directly
 import styles from "./EditAnswer.module.css";
 import { UserContext } from "../../context/UserProvider";
 import DOMPurify from "dompurify";
+import axiosInstance from "../../API/axios";
 
 function EditAnswer() {
   const { answer_id } = useParams();
@@ -19,13 +20,7 @@ function EditAnswer() {
   useEffect(() => {
     const fetchAnswer = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:5500/api/answers/${answer_id}`,
-          {
-            // ✅ Fixed endpoint
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const response = await axiosInstance.get(`/answers/${answer_id}`);
         console.log("Answer data:", response.data);
         setAnswer(response.data.answer || "");
         setOriginalAnswer(response.data.answer || "");
@@ -50,13 +45,10 @@ function EditAnswer() {
     }
 
     try {
-      await axios.put(
-        `http://localhost:5500/api/answers/${answer_id}`, // ✅ Fixed endpoint
-        { answer: answer.trim() },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      await axiosInstance.put(`/answers/${answer_id}`, {
+        answer: answer.trim(),
+      });
+      
       navigate(-1); // Go back to previous page
     } catch (err) {
       console.error("Update error:", err);

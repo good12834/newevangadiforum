@@ -7,6 +7,7 @@ import styles from "./QuestionDetail.module.css";
 import { FaUserCircle } from "react-icons/fa";
 import { ClipLoader } from "react-spinners";
 import DOMPurify from "dompurify";
+import axiosInstance from "../../API/axios";
 
 const QuestionDetail = () => {
   const { question_id } = useParams();
@@ -41,11 +42,8 @@ const QuestionDetail = () => {
         const token = localStorage.getItem("token");
 
         // Fetch question details
-        const questionResponse = await axios.get(
-          `http://localhost:5500/api/question/${question_id}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+        const questionResponse = await axiosInstance.get(
+          `/question/${question_id}`
         );
 
         console.log("🔍 DEBUG - Question Data:", questionResponse.data);
@@ -56,12 +54,7 @@ const QuestionDetail = () => {
         }
 
         // Fetch all answers
-        const answersResponse = await axios.get(
-          "http://localhost:5500/api/answers/",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const answersResponse = await axiosInstance.get("/answers/");
 
         // Filter answers for this specific question
         const questionAnswers =
@@ -133,27 +126,13 @@ const QuestionDetail = () => {
     setAnswerLoading(true);
 
     try {
-      const response = await axios.post(
-        `http://localhost:5500/api/answers/${question_id}`,
-        {
-          answer: newAnswer,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axiosInstance.post(`/answers/${question_id}`, {
+        answer: newAnswer,
+      });
 
       if (response.status === 201) {
         // Refresh answers after posting
-        const answersResponse = await axios.get(
-          "http://localhost:5500/api/answers/",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const answersResponse = await axiosInstance.get("/answers/");
 
         const questionAnswers =
           answersResponse.data.answers?.filter(
@@ -181,14 +160,8 @@ const QuestionDetail = () => {
     );
     if (!confirmDelete) return;
 
-    const token = localStorage.getItem("token");
-
     try {
-      await axios.delete(`http://localhost:5500/api/answers/${answer_id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await axiosInstance.delete(`/answers/${answer_id}`);
 
       setAnswers((prev) =>
         prev.filter((answer) => answer.answer_id !== answer_id)

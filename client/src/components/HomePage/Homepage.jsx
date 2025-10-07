@@ -8,6 +8,7 @@ import { UserContext } from "../../context/UserProvider";
 import DOMPurify from "dompurify";
 import styles from "./HomePage.module.css";
 import { ClipLoader } from "react-spinners";
+import axiosInstance from "../../API/axios";
 
 const HomePage = () => {
   const token = localStorage.getItem("token");
@@ -24,8 +25,8 @@ const HomePage = () => {
     const fetchQuestions = async () => {
       try {
         console.log("Fetching questions...");
-        const response = await axios.get("http://localhost:5500/api/question", {
-          // ✅ Fixed endpoint
+        const response = await axiosInstance.get("/question", {
+          // Fixed endpoint
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -66,8 +67,7 @@ const HomePage = () => {
     if (!confirmDelete) return;
 
     try {
-      await axios.delete(`http://localhost:5500/api/question/${question_id}`, {
-        headers: { Authorization: `Bearer ${token}` },
+      await axiosInstance.delete(`/question/${question_id}`, {
         data: { user_id: user.user_id },
       });
 

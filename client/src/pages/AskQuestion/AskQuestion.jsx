@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import styles from "./AskQuestion.module.css";
+import axiosInstance from "../../API/axios";
 
 function AskQuestion() {
   const [title, setTitle] = useState("");
@@ -20,8 +21,8 @@ function AskQuestion() {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await axios.post(
-        "http://localhost:5500/api/question",
+      const res = await axiosInstance.post(
+        "/question",
         {
           title,
           question_description: description,
