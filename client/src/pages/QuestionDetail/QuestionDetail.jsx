@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../../context/UserProvider";
 import { QuestionContext } from "../../context/QuestionProvider";
-import axios from "axios"; // ✅ Use axios directly
+import axios from "axios";
 import styles from "./QuestionDetail.module.css";
 import { FaUserCircle } from "react-icons/fa";
 import { ClipLoader } from "react-spinners";
@@ -18,14 +18,27 @@ const QuestionDetail = () => {
   const [answerLoading, setAnswerLoading] = useState(false);
   const navigate = useNavigate();
 
+  // ✅ FIX: Add user stability check
+  const [isUserStable, setIsUserStable] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      console.log("✅ QuestionDetail - User is stable:", user);
+      setIsUserStable(true);
+    }
+  }, [user]);
+
+  // DEBUG: Log user and question data
+  console.log("🔍 DEBUG - Current User:", user);
+  console.log("🔍 DEBUG - Question ID:", question_id);
+  console.log("🔍 DEBUG - All Questions:", questions);
+
   // Fetch question and answers
   useEffect(() => {
     const fetchQuestionAndAnswers = async () => {
       try {
         setLoading(true);
         const token = localStorage.getItem("token");
-
-        console.log("Fetching question:", question_id);
 
         // Fetch question details
         const questionResponse = await axios.get(
@@ -35,7 +48,7 @@ const QuestionDetail = () => {
           }
         );
 
-        console.log("Question response:", questionResponse.data);
+        console.log("🔍 DEBUG - Question Data:", questionResponse.data);
 
         // Add question to context if not already there
         if (!questions.find((q) => q.question_id == question_id)) {
@@ -50,29 +63,62 @@ const QuestionDetail = () => {
           }
         );
 
-        console.log("All answers:", answersResponse.data);
-
         // Filter answers for this specific question
         const questionAnswers =
           answersResponse.data.answers?.filter(
             (answer) => answer.question_id == question_id
           ) || [];
 
-        console.log("Filtered answers:", questionAnswers);
+        console.log("🔍 DEBUG - Filtered Answers:", questionAnswers);
         setAnswers(questionAnswers);
       } catch (error) {
         console.error("Error fetching data:", error);
-        console.error("Error response:", error.response);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchQuestionAndAnswers();
-  }, [question_id, setQuestions, questions]);
+    if (isUserStable) {
+      fetchQuestionAndAnswers();
+    }
+  }, [question_id, setQuestions, questions, isUserStable]);
 
   // Get current question
   const question = questions.find((q) => q.question_id == question_id);
+
+  // ✅ FIX: Improved ownership check function
+  const canEditQuestion = () => {
+    if (!user || !question) return false;
+
+    const userId = user.user_id || user.userid;
+    const questionUserId = question.user_id;
+
+    console.log(
+      "🔍 Ownership Check - User ID:",
+      userId,
+      "Question User ID:",
+      questionUserId
+    );
+    console.log("🔍 Ownership Check - Can edit:", userId == questionUserId);
+
+    return userId == questionUserId;
+  };
+
+  const canEditAnswer = (answerUserId) => {
+    if (!user) return false;
+
+    const userId = user.user_id || user.userid;
+
+    console.log(
+      "🔍 Answer Ownership - User ID:",
+      userId,
+      "Answer User ID:",
+      answerUserId
+    );
+    console.log("🔍 Answer Ownership - Can edit:", userId == answerUserId);
+
+    return userId == answerUserId;
+  };
 
   // Post new answer
   const handleSubmitAnswer = async (e) => {
@@ -100,8 +146,6 @@ const QuestionDetail = () => {
         }
       );
 
-      console.log("Answer post response:", response.data);
-
       if (response.status === 201) {
         // Refresh answers after posting
         const answersResponse = await axios.get(
@@ -122,7 +166,6 @@ const QuestionDetail = () => {
       }
     } catch (error) {
       console.error("Error posting answer:", error);
-      console.error("Error response:", error.response);
       alert("Failed to post answer. Please try again.");
     } finally {
       setAnswerLoading(false);
@@ -190,7 +233,18 @@ const QuestionDetail = () => {
       {/* Question Card */}
       <div className={styles.questionCard}>
         <div className={styles.cardBody}>
-          <h4 className={styles.cardTitle}>Question</h4>
+          <div className={styles.questionHeader}>
+            <h4 className={styles.cardTitle}>Question</h4>
+            {/* ✅ FIX: Use the improved ownership check */}
+            {canEditQuestion() && (
+              <button
+                className={styles.editBtn}
+                onClick={() => navigate(`/edit-question/${question_id}`)}
+              >
+                ✏️ Edit Question
+              </button>
+            )}
+          </div>
           <h5 className={styles.cardSubtitle}>{question.title}</h5>
           <div
             className={styles.questDiv}
@@ -232,38 +286,49 @@ const QuestionDetail = () => {
           </p>
         </div>
       ) : (
-        answers.map((answer, index) => (
-          <div className={styles.answerCard} key={answer.answer_id || index}>
-            <div className={styles.answerBody}>
-              <div className={styles.userInfo}>
-                <div className={styles.userIconDiv}>
-                  <FaUserCircle size={35} className={styles.profileIcon} />
-                  <p className={styles.username}>{answer.user_name}</p>
-                </div>
-                <div className={styles.answerContent}>
-                  <p>{answer.answer}</p>
+        answers.map((answer, index) => {
+          return (
+            <div className={styles.answerCard} key={answer.answer_id || index}>
+              <div className={styles.answerBody}>
+                <div className={styles.userInfo}>
+                  <div className={styles.userIconDiv}>
+                    <FaUserCircle size={35} className={styles.profileIcon} />
+                    <p className={styles.user_name}>{answer.user_name}</p>
+                  </div>
+                  <div className={styles.answerContent}>
+                    <p>{answer.answer}</p>
+                  </div>
                 </div>
               </div>
+              <div className={styles.btnContainer}>
+                {/* ✅ FIX: Use the improved ownership check */}
+                {canEditAnswer(answer.user_id) && (
+                  <div className={styles.actionButtons}>
+                    <button
+                      className={styles.editBtn}
+                      onClick={() =>
+                        navigate(`/edit-answer/${answer.answer_id}`)
+                      }
+                    >
+                      ✏️ Edit
+                    </button>
+                    <button
+                      className={styles.deleteBtn}
+                      onClick={(e) => handleDeleteAnswer(answer.answer_id, e)}
+                    >
+                      🗑️ Delete
+                    </button>
+                  </div>
+                )}
+              </div>
+              <div className={styles.answerMeta}>
+                <span className={styles.answerDate}>
+                  Answered on {new Date(answer.createdAt).toLocaleDateString()}
+                </span>
+              </div>
             </div>
-            <div className={styles.btnContainer}>
-              {user?.user_id === answer.user_id && (
-                <div className={styles.actionButtons}>
-                  <button
-                    className={styles.deleteBtn}
-                    onClick={(e) => handleDeleteAnswer(answer.answer_id, e)}
-                  >
-                    Delete
-                  </button>
-                </div>
-              )}
-            </div>
-            <div className={styles.answerMeta}>
-              <span className={styles.answerDate}>
-                Answered on {new Date(answer.createdAt).toLocaleDateString()}
-              </span>
-            </div>
-          </div>
-        ))
+          );
+        })
       )}
 
       {/* Answer Form */}

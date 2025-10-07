@@ -1,13 +1,14 @@
 import React, { useState, useContext } from "react";
 import styles from "./Login.module.css";
 import { Link, useNavigate } from "react-router-dom";
-import { UserContext } from "../../context/UserProvider"; // Import UserContext
+import { UserContext } from "../../context/UserProvider";
 import axiosInstance from "../../API/axios";
 import { ClipLoader } from "react-spinners";
+import { jwtDecode } from "jwt-decode";
 
 function Login() {
   const navigate = useNavigate();
-  const [user, setUser] = useContext(UserContext); // Access and update UserContext
+  const [user, setUser] = useContext(UserContext);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -40,10 +41,24 @@ function Login() {
       const response = await axiosInstance.post("/users/login", formData);
       setSuccessMessage(response.data.msg);
 
-      localStorage.setItem("token", response.data.token);
-      setUser({ token: response.data.token }); // Update the UserContext
+      const token = response.data.token;
+      localStorage.setItem("token", token);
 
-      navigate("/home");
+      // ✅ FIX: Decode and set user with proper mapping
+      const decoded = jwtDecode(token);
+      console.log("🔍 Login - Decoded token:", decoded);
+
+      // ✅ FIX: Set user with correct property mapping
+      setUser({
+        user_id: decoded.userid, // Map to user_id
+        user_name: decoded.username, // Map to user_name
+        token: token,
+      });
+
+      // ✅ FIX: Add small delay to ensure context is updated
+      setTimeout(() => {
+        navigate("/home");
+      }, 100);
     } catch (error) {
       console.error("Login error:", error);
       setError(

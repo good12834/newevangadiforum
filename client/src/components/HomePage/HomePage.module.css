@@ -172,13 +172,14 @@
   margin-bottom: 15px;
 }
 
-/* Meta information */
+/* Meta information - FIXED */
 .meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
   gap: 10px;
+  min-height: 30px; /* ✅ Ensure space for buttons */
 }
 
 .tags {
@@ -200,10 +201,12 @@
   color: #707070;
 }
 
-/* Action buttons */
+/* ✅ FIXED: Action buttons - Improved positioning */
 .actionButtons {
   display: flex;
   gap: 10px;
+  margin-left: auto; /* ✅ Push to the right */
+  flex-shrink: 0; /* ✅ Prevent shrinking */
 }
 
 .deleteBtn {
@@ -215,6 +218,9 @@
   cursor: pointer;
   font-size: 12px;
   transition: background-color 0.3s;
+  white-space: nowrap; /* ✅ Prevent text wrapping */
+  z-index: 10; /* ✅ Ensure visibility */
+  position: relative; /* ✅ Ensure proper stacking */
 }
 
 .deleteBtn:hover {
@@ -287,6 +293,13 @@
     gap: 10px;
   }
 
+  /* ✅ FIXED: Mobile action buttons */
+  .actionButtons {
+    margin-left: 0; /* ✅ Reset margin on mobile */
+    width: 100%; /* ✅ Full width on mobile */
+    justify-content: flex-end; /* ✅ Align to right */
+  }
+
   .arrow {
     margin-left: 10px;
   }
@@ -317,5 +330,89 @@
   .askQuestionBtn {
     width: 100%;
     max-width: none;
+  }
+
+
+  .actionButtons {
+    justify-content: flex-start; 
+  }
+}
+
+
+
+/* Meta information */
+.meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px; /* ✅ Add space for action buttons */
+}
+
+
+.actionButtons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end; /* ✅ Align to right */
+  margin-top: 10px; /* ✅ Space from meta section */
+  padding-top: 10px; /* ✅ Visual separation */
+  border-top: 1px solid #f0f0f0; /* ✅ Visual separator */
+}
+
+.deleteBtn {
+  padding: 8px 16px;
+  background-color: #d9534f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.3s;
+  white-space: nowrap;
+}
+
+.deleteBtn:hover {
+  background-color: #c9302c;
+}
+
+
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .homeHeader {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+
+  .cardWrapper {
+    padding: 15px;
+  }
+
+  .meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+
+  .actionButtons {
+    justify-content: flex-start; 
+    width: 100%;
+  }
+
+  .arrow {
+    margin-left: 10px;
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .pagination button {
+    width: 150px;
   }
 }

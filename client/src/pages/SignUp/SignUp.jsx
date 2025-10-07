@@ -3,6 +3,7 @@ import axios from "../../API/axios";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../../context/UserProvider";
+import { jwtDecode } from "jwt-decode";
 import styles from "./SignUp.module.css";
 
 const Register = () => {
@@ -65,25 +66,33 @@ const Register = () => {
           });
 
           if (loginRes.status === 200) {
-            // Save token to localStorage
-            localStorage.setItem("token", loginRes.data.token);
+            const token = loginRes.data.token;
 
-            // Set user context
+            // Save token to localStorage
+            localStorage.setItem("token", token);
+
+            // ✅ FIX: Decode the token and map properties correctly
+            const decoded = jwtDecode(token);
+            console.log("🔍 SignUp - Decoded token:", decoded);
+
+            // ✅ FIX: Map backend properties to frontend expected properties
             setUser({
-              user_name: loginRes.data.user?.username || formData.username,
-              user_id: loginRes.data.user?.id,
+              user_id: decoded.userid, // Map 'userid' to 'user_id'
+              user_name: decoded.username, // Map 'username' to 'user_name'
+              token: token,
             });
 
             toast.success("Registration successful! Welcome!");
-            navigate("/home"); // Redirect to home page
+            navigate("/home");
           }
         } catch (loginError) {
-          // If auto-login fails, redirect to login page
+          console.error("Auto-login failed:", loginError);
           toast.success("Registration successful! Please log in.");
-          navigate("/login");
+          navigate("/users/login");
         }
       }
     } catch (error) {
+      console.error("Registration error:", error);
       toast.error(error?.response?.data?.msg || "Signup failed.");
     } finally {
       setLoading(false);
@@ -162,7 +171,7 @@ const Register = () => {
             </button>
           </form>
           <p className={styles.switchText}>
-            Already have an account? <Link to="/login">Login</Link>
+            Already have an account? <Link to="/users/login">Login</Link>
           </p>
         </div>
       </div>

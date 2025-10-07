@@ -17,7 +17,7 @@
 }
 
 .backLink {
-  color: #FF8500;
+  color: #ff8500;
   text-decoration: none;
   font-weight: 500;
   display: inline-block;
@@ -102,7 +102,7 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  border-left: 4px solid #FF8500;
+  border-left: 4px solid #ff8500;
   position: relative;
   padding: 20px;
 }
@@ -177,12 +177,12 @@
 
 .answerTextarea:focus {
   outline: none;
-  border-color: #FF8500;
+  border-color: #ff8500;
   box-shadow: 0 0 0 2px rgba(255, 133, 0, 0.1);
 }
 
 .submitButton {
-  background: #FF8500;
+  background: #ff8500;
   color: white;
   border: none;
   padding: 12px 30px;
@@ -254,32 +254,32 @@
     width: 95%;
     padding: 15px;
   }
-  
+
   .userInfo {
     flex-direction: column;
     gap: 10px;
   }
-  
+
   .userIconDiv {
     flex-direction: row;
     min-width: auto;
   }
-  
+
   .btnContainer {
     position: static;
     margin-top: 15px;
   }
-  
+
   .questionMeta {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
   }
-  
+
   .cardTitle {
     font-size: 1.3rem;
   }
-  
+
   .cardSubtitle {
     font-size: 1.1rem;
   }
@@ -290,23 +290,83 @@
     width: 100%;
     padding: 10px;
   }
-  
+
   .questionCard,
   .answersCard,
   .answerCard,
   .answerFormCard {
     padding: 15px;
   }
-  
+
   .questDiv {
     font-size: 0.9rem;
   }
-  
+
   .cardTitle {
     font-size: 1.2rem;
   }
-  
+
   .cardSubtitle {
     font-size: 1rem;
   }
+}
+
+/* Make sure edit buttons are visible */
+.editBtn {
+  background-color: #007bff !important;
+  color: white !important;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.3s;
+  text-decoration: none;
+  display: inline-block;
+  margin: 5px;
+}
+
+.editBtn:hover {
+  background-color: #0056b3 !important;
+  transform: translateY(-1px);
+}
+
+.deleteBtn {
+  background-color: #dc3545 !important;
+  color: white !important;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.deleteBtn:hover {
+  background-color: #c82333 !important;
+  transform: translateY(-1px);
+}
+
+.actionButtons {
+  display: flex !important;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btnContainer {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  z-index: 10;
+}
+
+.questionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 10px;
 }

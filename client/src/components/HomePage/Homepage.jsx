@@ -51,7 +51,6 @@ const HomePage = () => {
     }
   }, [token, setQuestions]);
 
-  // Rest of your HomePage component remains the same...
   const handleDelete = async (question_id, e) => {
     e.stopPropagation();
 
@@ -212,19 +211,19 @@ const HomePage = () => {
                     <div className={styles.date}>
                       Asked {formatDate(question.createdAt)}
                     </div>
-
-                    {/* Action Buttons */}
-                    {user?.user_id === question.user_id && (
-                      <div className={styles.actionButtons}>
-                        <button
-                          className={styles.deleteBtn}
-                          onClick={(e) => handleDelete(question.question_id, e)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    )}
                   </div>
+
+                  {/* ✅ FIXED: Action Buttons - MOVED OUTSIDE meta section */}
+                  {user?.user_id === question.user_id && (
+                    <div className={styles.actionButtons}>
+                      <button
+                        className={styles.deleteBtn}
+                        onClick={(e) => handleDelete(question.question_id, e)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
 

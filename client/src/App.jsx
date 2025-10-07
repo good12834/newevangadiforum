@@ -14,6 +14,8 @@ import SignUp from "./pages/SignUp/SignUp";
 import { jwtDecode } from "jwt-decode";
 import HowItWorks from "./pages/HowItWorks/HowItWorks";
 import ForgetPassword from "./pages/ForgetPassword/ForgetPassword";
+import EditQuestion from "./pages/EditQuestion/EditQuestion";
+import EditAnswer from "./pages/EditAnswer/EditAnswer";
 
 function App() {
   const [user, setUser] = useContext(UserContext);
@@ -35,7 +37,7 @@ function App() {
     if (!token || isTokenExpired(token)) {
       localStorage.removeItem("token");
       setUser(null);
-      navigate("/users/login");
+      setLoading(false);
       return;
     }
 
@@ -45,12 +47,19 @@ function App() {
           Authorization: `Bearer ${token}`,
         },
       });
-      setUser({ user_name: data.user_name, user_id: data.user_id });
+
+      // ✅ FIX: Ensure user data is properly set with correct property names
+      const decoded = jwtDecode(token);
+      setUser({
+        user_id: decoded.userid, // Map to user_id
+        user_name: decoded.username, // Map to user_name
+        token: token,
+      });
     } catch (error) {
       console.error("Authentication error:", error.message);
+      localStorage.removeItem("token");
       setUser(null);
       setError("Failed to authenticate. Please log in again.");
-      navigate("/users/login");
     } finally {
       setLoading(false);
     }
@@ -61,8 +70,16 @@ function App() {
       checkUser();
     } else {
       setLoading(false);
+      setUser(null); // Ensure user is null when no token
     }
   }, [token]);
+
+  // ✅ FIX: Add useEffect to persist user data
+  useEffect(() => {
+    if (user) {
+      console.log("🔄 App - User context updated:", user);
+    }
+  }, [user]);
 
   if (loading) {
     return (
@@ -118,6 +135,23 @@ function App() {
             element={
               <ProtectedRoute>
                 <AskQuestion />
+              </ProtectedRoute>
+            }
+          />
+          {/* Add Edit Routes */}
+          <Route
+            path="/edit-question/:question_id"
+            element={
+              <ProtectedRoute>
+                <EditQuestion />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/edit-answer/:answer_id"
+            element={
+              <ProtectedRoute>
+                <EditAnswer />
               </ProtectedRoute>
             }
           />
