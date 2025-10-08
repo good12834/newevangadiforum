@@ -47,7 +47,7 @@
 /* ===== Input Fields ===== */
 .inputField {
   width: 100%;
-  padding: 12px 40px 12px 12px; /* space for eye icon */
+  padding: 12px 35px 12px 12px; /* Reduced space for smaller eye icon */
   margin: 10px 0 20px 0;
   border: 1px solid #ccc;
   border-radius: 10px;
@@ -71,31 +71,36 @@
 .passwordToggle {
   position: absolute;
   top: 50%;
-  right: 0; /* flush to right-most border */
+  right: 8px; /* Moved from 0 to 8px for better spacing */
   transform: translateY(-50%);
   background: none;
   border: none;
   color: #777;
   cursor: pointer;
-  padding: 8px;
+  padding: 4px; /* Reduced padding */
   display: flex;
   align-items: center;
   justify-content: center;
   outline: none;
   box-shadow: none;
+  width: 24px; /* Fixed width */
+  height: 24px; /* Fixed height */
+  border-radius: 3px; /* Small rounded corners */
+}
+
+/* Make the eye icons very small */
+.passwordToggle svg {
+  width: 16px; /* Smaller icon */
+  height: 16px;
 }
 
 .passwordToggle:hover,
 .passwordToggle:focus,
 .passwordToggle:active {
-  color: #777; /* no color change on hover/focus */
+  color: #777;
+  background-color: #f5f5f5; /* Light background on hover */
   outline: none;
   box-shadow: none;
-}
-
-/* Adjust input padding to prevent text overlapping the eye */
-.inputField {
-  padding-right: 40px;
 }
 
 /* ===== Submit Button ===== */
@@ -194,6 +199,26 @@
   background-color: #e55a00;
 }
 
+/* Password error message */
+.passwordError {
+  color: #ff4444;
+  font-size: 12px;
+  margin-top: -15px;
+  margin-bottom: 15px;
+  text-align: left;
+  padding-left: 5px;
+}
+
+/* Optional: Add red border to input when there's an error */
+.inputError {
+  border-color: #ff4444 !important;
+}
+
+.inputError:focus {
+  border-color: #ff4444 !important;
+  box-shadow: 0 0 0 2px rgba(255, 68, 68, 0.2) !important;
+}
+
 /* ===== Media Queries ===== */
 @media (min-width: 768px) {
   .wrapperContainer {
@@ -216,12 +241,19 @@
   }
 
   .inputField {
-    padding: 14px 50px 14px 14px; /* space for eye icon on desktop */
+    padding: 14px 35px 14px 14px; /* Consistent reduced space */
   }
 
   .passwordToggle {
-    right: 0;
-    padding: 8px;
+    right: 8px;
+    padding: 4px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .passwordToggle svg {
+    width: 16px;
+    height: 16px;
   }
 }
 
@@ -241,32 +273,18 @@
   }
 
   .inputField {
-    padding: 10px 40px 10px 10px;
+    padding: 10px 35px 10px 10px; /* Consistent reduced space */
   }
 
   .passwordToggle {
-    right: 0;
+    right: 8px;
     padding: 4px;
+    width: 22px; /* Slightly smaller on mobile */
+    height: 22px;
   }
-}
-/* Add to your existing CSS */
 
-/* Password error message */
-.passwordError {
-  color: #ff4444;
-  font-size: 12px;
-  margin-top: -15px;
-  margin-bottom: 15px;
-  text-align: left;
-  padding-left: 5px;
-}
-
-/* Optional: Add red border to input when there's an error */
-.inputError {
-  border-color: #ff4444 !important;
-}
-
-.inputError:focus {
-  border-color: #ff4444 !important;
-  box-shadow: 0 0 0 2px rgba(255, 68, 68, 0.2) !important;
+  .passwordToggle svg {
+    width: 14px; /* Even smaller on mobile */
+    height: 14px;
+  }
 }
