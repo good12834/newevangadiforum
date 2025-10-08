@@ -6,7 +6,6 @@ import { UserContext } from "../../context/UserProvider";
 import { jwtDecode } from "jwt-decode";
 import styles from "./SignUp.module.css";
 import { Eye, EyeOff } from "lucide-react";
-
 const Register = () => {
   const [formData, setFormData] = useState({
     username: "",
@@ -17,18 +16,31 @@ const Register = () => {
   });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
   const [user, setUser] = useContext(UserContext);
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    
+    // Real-time password validation
+    if (name === "password") {
+      if (value.length > 0 && value.length < 8) {
+        setPasswordError("Password must be at least 8 characters");
+      } else {
+        setPasswordError("");
+      }
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-
+    
+    // Clear any existing toasts first
+    toast.dismiss();
+    
+    // Validation checks - do this BEFORE setLoading(true)
     if (
       !formData.username ||
       !formData.firstName ||
@@ -37,15 +49,25 @@ const Register = () => {
       !formData.password
     ) {
       toast.error("All fields are required!");
-      setLoading(false);
       return;
     }
 
+    // Password validation
     if (formData.password.length < 8) {
+      setPasswordError("Password must be at least 8 characters");
       toast.error("Password must be at least 8 characters long");
-      setLoading(false);
       return;
     }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    // Only set loading to true AFTER all validations pass
+    setLoading(true);
 
     try {
       const res = await axios.post("/users/register", {
@@ -86,7 +108,14 @@ const Register = () => {
       }
     } catch (error) {
       console.error("Registration error:", error);
-      toast.error(error?.response?.data?.msg || "Signup failed.");
+      
+      if (error.response) {
+        toast.error(error.response.data?.msg || "Signup failed. Please try again.");
+      } else if (error.request) {
+        toast.error("Network error. Please check your connection.");
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
     } finally {
       setLoading(false);
     }
@@ -141,7 +170,7 @@ const Register = () => {
                 type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Password"
-                className={styles.inputField}
+                className={`${styles.inputField} ${passwordError ? styles.inputError : ''}`}
                 value={formData.password}
                 onChange={handleInputChange}
                 required
@@ -150,11 +179,17 @@ const Register = () => {
                 type="button"
                 className={styles.passwordToggle}
                 onClick={() => setShowPassword(!showPassword)}
-                onMouseDown={(e) => e.preventDefault()} // prevents orange focus highlight
+                onMouseDown={(e) => e.preventDefault()}
               >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
+            {/* Password error message */}
+            {passwordError && (
+              <div className={styles.passwordError}>
+                {passwordError}
+              </div>
+            )}
             <button
               type="submit"
               className={styles.submitButton}
