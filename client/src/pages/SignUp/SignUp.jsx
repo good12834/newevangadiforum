@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../../context/UserProvider";
 import { jwtDecode } from "jwt-decode";
 import styles from "./SignUp.module.css";
+import { Eye, EyeOff } from "lucide-react";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -28,7 +29,6 @@ const Register = () => {
     e.preventDefault();
     setLoading(true);
 
-    // Basic validation
     if (
       !formData.username ||
       !formData.firstName ||
@@ -41,7 +41,6 @@ const Register = () => {
       return;
     }
 
-    // Password validation
     if (formData.password.length < 8) {
       toast.error("Password must be at least 8 characters long");
       setLoading(false);
@@ -58,7 +57,6 @@ const Register = () => {
       });
 
       if (res.status === 201) {
-        // After successful registration, automatically log the user in
         try {
           const loginRes = await axios.post("/users/login", {
             email: formData.email,
@@ -67,18 +65,13 @@ const Register = () => {
 
           if (loginRes.status === 200) {
             const token = loginRes.data.token;
-
-            // Save token to localStorage
             localStorage.setItem("token", token);
 
-            // ✅ FIX: Decode the token and map properties correctly
             const decoded = jwtDecode(token);
-            console.log("🔍 SignUp - Decoded token:", decoded);
 
-            // ✅ FIX: Map backend properties to frontend expected properties
             setUser({
-              user_id: decoded.userid, // Map 'userid' to 'user_id'
-              user_name: decoded.username, // Map 'username' to 'user_name'
+              user_id: decoded.userid,
+              user_name: decoded.username,
               token: token,
             });
 
@@ -101,7 +94,6 @@ const Register = () => {
 
   return (
     <div className={styles.wrapperContainer}>
-      {/* Registration Section */}
       <div className={styles.registerPage}>
         <div className={styles.registerBox}>
           <h2>Join the Network</h2>
@@ -158,8 +150,9 @@ const Register = () => {
                 type="button"
                 className={styles.passwordToggle}
                 onClick={() => setShowPassword(!showPassword)}
+                onMouseDown={(e) => e.preventDefault()} // prevents orange focus highlight
               >
-                {showPassword ? "Hide" : "Show"}
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
             <button
@@ -176,7 +169,6 @@ const Register = () => {
         </div>
       </div>
 
-      {/* About container section */}
       <div className={styles.container}>
         <h3>About</h3>
         <h1>Evangadi Network</h1>

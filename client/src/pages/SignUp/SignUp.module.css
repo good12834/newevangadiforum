@@ -41,32 +41,64 @@
 .nameFields {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
+/* ===== Input Fields ===== */
 .inputField {
   width: 100%;
-  padding: 14px;
+  padding: 12px 40px 12px 12px; /* space for eye icon */
   margin: 10px 0 20px 0;
   border: 1px solid #ccc;
   border-radius: 10px;
+  font-size: 16px;
+  outline: none;
+  transition: all 0.2s ease;
 }
 
+.inputField:focus {
+  border-color: #ff8500;
+  box-shadow: 0 0 0 2px rgba(255, 133, 0, 0.2);
+}
+
+/* ===== Password Wrapper & Eye Toggle ===== */
 .passwordWrapper {
   position: relative;
+  width: 100%;
+  margin-bottom: 16px;
 }
 
 .passwordToggle {
   position: absolute;
-  right: 12px;
   top: 50%;
+  right: 0; /* flush to right-most border */
   transform: translateY(-50%);
-  border: none;
   background: none;
+  border: none;
+  color: #777;
   cursor: pointer;
-  color: #555;
-  font-weight: 600;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  box-shadow: none;
 }
 
+.passwordToggle:hover,
+.passwordToggle:focus,
+.passwordToggle:active {
+  color: #777; /* no color change on hover/focus */
+  outline: none;
+  box-shadow: none;
+}
+
+/* Adjust input padding to prevent text overlapping the eye */
+.inputField {
+  padding-right: 40px;
+}
+
+/* ===== Submit Button ===== */
 .submitButton {
   width: 100%;
   padding: 14px;
@@ -76,6 +108,7 @@
   color: #fff;
   font-size: 16px;
   cursor: pointer;
+  outline: none;
 }
 
 .submitButton:hover {
@@ -181,6 +214,15 @@
     padding: 40px;
     text-align: left;
   }
+
+  .inputField {
+    padding: 14px 50px 14px 14px; /* space for eye icon on desktop */
+  }
+
+  .passwordToggle {
+    right: 0;
+    padding: 8px;
+  }
 }
 
 @media (max-width: 767px) {
@@ -188,13 +230,22 @@
     flex-direction: column;
   }
 
+  .wrapperContainer {
+    flex-direction: column;
+    padding: 20px;
+  }
+
   .container h1,
   .container p {
     text-align: center;
   }
 
-  .wrapperContainer {
-    flex-direction: column;
-    padding: 20px;
+  .inputField {
+    padding: 10px 40px 10px 10px;
+  }
+
+  .passwordToggle {
+    right: 0;
+    padding: 4px;
   }
 }
