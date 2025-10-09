@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
 import { IoIosArrowDropright } from "react-icons/io";
-import axios from "axios"; // ✅ Use axios directly
+import axios from "axios";
 import { QuestionContext } from "../../context/QuestionProvider";
 import { UserContext } from "../../context/UserProvider";
 import DOMPurify from "dompurify";
@@ -32,7 +32,7 @@ const HomePage = () => {
           },
         });
         console.log("Questions data:", response.data);
-        setQuestions(response.data); // ✅ Direct array, no .questions property
+        setQuestions(response.data); 
       } catch (err) {
         console.error("API Error:", err);
         setError(

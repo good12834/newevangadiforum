@@ -10,18 +10,24 @@ import DOMPurify from "dompurify";
 import axiosInstance from "../../API/axios";
 
 const QuestionDetail = () => {
+  // Get question ID from the URL (dynamic route)
   const { question_id } = useParams();
+
+  // Access logged-in user info
   const [user] = useContext(UserContext);
+
+  // Access global questions state
   const { questions, setQuestions } = useContext(QuestionContext);
-  const [answers, setAnswers] = useState([]);
-  const [newAnswer, setNewAnswer] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [answerLoading, setAnswerLoading] = useState(false);
-  const navigate = useNavigate();
 
-  // ✅ FIX: Add user stability check
-  const [isUserStable, setIsUserStable] = useState(false);
+  // Local state
+  const [answers, setAnswers] = useState([]); // All answers for this question
+  const [newAnswer, setNewAnswer] = useState(""); // Input for new answer
+  const [loading, setLoading] = useState(true); // Loading state for question/answers
+  const [answerLoading, setAnswerLoading] = useState(false); // Loading state for posting an answer
+  const [isUserStable, setIsUserStable] = useState(false); // Ensures user data is loaded before fetching
+  const navigate = useNavigate(); // For programmatic navigation
 
+  // Wait until user context is stable
   useEffect(() => {
     if (user) {
       console.log("✅ QuestionDetail - User is stable:", user);
@@ -29,26 +35,25 @@ const QuestionDetail = () => {
     }
   }, [user]);
 
-  // DEBUG: Log user and question data
+  // DEBUG: Log important data for development
   console.log("🔍 DEBUG - Current User:", user);
   console.log("🔍 DEBUG - Question ID:", question_id);
   console.log("🔍 DEBUG - All Questions:", questions);
 
-  // Fetch question and answers
+  // Fetch question and answers from API
   useEffect(() => {
     const fetchQuestionAndAnswers = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("token"); // Auth token if needed
 
-        // Fetch question details
+        // Fetch question details from backend
         const questionResponse = await axiosInstance.get(
           `/question/${question_id}`
         );
-
         console.log("🔍 DEBUG - Question Data:", questionResponse.data);
 
-        // Add question to context if not already there
+        // Add question to global context if not already there
         if (!questions.find((q) => q.question_id == question_id)) {
           setQuestions((prev) => [...prev, questionResponse.data]);
         }
@@ -61,13 +66,13 @@ const QuestionDetail = () => {
           answersResponse.data.answers?.filter(
             (answer) => answer.question_id == question_id
           ) || [];
-
         console.log("🔍 DEBUG - Filtered Answers:", questionAnswers);
-        setAnswers(questionAnswers);
+
+        setAnswers(questionAnswers); // Update local answers state
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
-        setLoading(false);
+        setLoading(false); // Stop loading spinner
       }
     };
 
@@ -76,13 +81,12 @@ const QuestionDetail = () => {
     }
   }, [question_id, setQuestions, questions, isUserStable]);
 
-  // Get current question
+  // Get the current question from context
   const question = questions.find((q) => q.question_id == question_id);
 
-  // ✅ FIX: Improved ownership check function
+  // Check if current user can edit the question
   const canEditQuestion = () => {
     if (!user || !question) return false;
-
     const userId = user.user_id || user.userid;
     const questionUserId = question.user_id;
 
@@ -92,14 +96,13 @@ const QuestionDetail = () => {
       "Question User ID:",
       questionUserId
     );
-    console.log("🔍 Ownership Check - Can edit:", userId == questionUserId);
 
     return userId == questionUserId;
   };
 
+  // Check if current user can edit a specific answer
   const canEditAnswer = (answerUserId) => {
     if (!user) return false;
-
     const userId = user.user_id || user.userid;
 
     console.log(
@@ -108,12 +111,11 @@ const QuestionDetail = () => {
       "Answer User ID:",
       answerUserId
     );
-    console.log("🔍 Answer Ownership - Can edit:", userId == answerUserId);
 
     return userId == answerUserId;
   };
 
-  // Post new answer
+  // Submit a new answer
   const handleSubmitAnswer = async (e) => {
     e.preventDefault();
 
@@ -122,7 +124,6 @@ const QuestionDetail = () => {
       return;
     }
 
-    const token = localStorage.getItem("token");
     setAnswerLoading(true);
 
     try {
@@ -133,14 +134,12 @@ const QuestionDetail = () => {
       if (response.status === 201) {
         // Refresh answers after posting
         const answersResponse = await axiosInstance.get("/answers/");
-
         const questionAnswers =
           answersResponse.data.answers?.filter(
             (answer) => answer.question_id == question_id
           ) || [];
-
         setAnswers(questionAnswers);
-        setNewAnswer("");
+        setNewAnswer(""); // Clear input
         alert("Answer posted successfully!");
       }
     } catch (error) {
@@ -151,9 +150,9 @@ const QuestionDetail = () => {
     }
   };
 
-  // Delete answer
+  // Delete an existing answer
   const handleDeleteAnswer = async (answer_id, e) => {
-    e.stopPropagation();
+    e.stopPropagation(); // Prevent parent click events
 
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this answer?"
@@ -162,7 +161,6 @@ const QuestionDetail = () => {
 
     try {
       await axiosInstance.delete(`/answers/${answer_id}`);
-
       setAnswers((prev) =>
         prev.filter((answer) => answer.answer_id !== answer_id)
       );
@@ -173,6 +171,7 @@ const QuestionDetail = () => {
     }
   };
 
+  // Show loading spinner while fetching data
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
@@ -182,6 +181,7 @@ const QuestionDetail = () => {
     );
   }
 
+  // Show error if question not found
   if (!question) {
     return (
       <div className={styles.errorContainer}>
@@ -194,9 +194,10 @@ const QuestionDetail = () => {
     );
   }
 
+  // Render question detail and answers
   return (
     <div className={styles.outerDiv}>
-      {/* Header */}
+      {/* Header with back link */}
       <div className={styles.header}>
         <Link to="/home" className={styles.backLink}>
           ← Back to Questions
@@ -208,7 +209,7 @@ const QuestionDetail = () => {
         <div className={styles.cardBody}>
           <div className={styles.questionHeader}>
             <h4 className={styles.cardTitle}>Question</h4>
-            {/* ✅ FIX: Use the improved ownership check */}
+            {/* Edit button visible only if user owns the question */}
             {canEditQuestion() && (
               <button
                 className={styles.editBtn}
@@ -251,6 +252,7 @@ const QuestionDetail = () => {
         </div>
       </div>
 
+      {/* If no answers */}
       {answers.length === 0 ? (
         <div className={styles.answerFormCard}>
           <h4 className={styles.cardTitle}>No answers yet</h4>
@@ -259,52 +261,51 @@ const QuestionDetail = () => {
           </p>
         </div>
       ) : (
-        answers.map((answer, index) => {
-          return (
-            <div className={styles.answerCard} key={answer.answer_id || index}>
-              <div className={styles.answerBody}>
-                <div className={styles.userInfo}>
-                  <div className={styles.userIconDiv}>
-                    <FaUserCircle size={35} className={styles.profileIcon} />
-                    <p className={styles.user_name}>{answer.user_name}</p>
-                  </div>
-                  <div className={styles.answerContent}>
-                    <p>{answer.answer}</p>
-                  </div>
+        // Render each answer
+        answers.map((answer, index) => (
+          <div className={styles.answerCard} key={answer.answer_id || index}>
+            <div className={styles.answerBody}>
+              <div className={styles.userInfo}>
+                <div className={styles.userIconDiv}>
+                  <FaUserCircle size={35} className={styles.profileIcon} />
+                  <p className={styles.user_name}>{answer.user_name}</p>
+                </div>
+                <div className={styles.answerContent}>
+                  <p>{answer.answer}</p>
                 </div>
               </div>
-              <div className={styles.btnContainer}>
-                {/* ✅ FIX: Use the improved ownership check */}
-                {canEditAnswer(answer.user_id) && (
-                  <div className={styles.actionButtons}>
-                    <button
-                      className={styles.editBtn}
-                      onClick={() =>
-                        navigate(`/edit-answer/${answer.answer_id}`)
-                      }
-                    >
-                      ✏️ Edit
-                    </button>
-                    <button
-                      className={styles.deleteBtn}
-                      onClick={(e) => handleDeleteAnswer(answer.answer_id, e)}
-                    >
-                      🗑️ Delete
-                    </button>
-                  </div>
-                )}
-              </div>
-              <div className={styles.answerMeta}>
-                <span className={styles.answerDate}>
-                  Answered on {new Date(answer.createdAt).toLocaleDateString()}
-                </span>
-              </div>
             </div>
-          );
-        })
+
+            {/* Edit/Delete buttons visible only to the answer owner */}
+            <div className={styles.btnContainer}>
+              {canEditAnswer(answer.user_id) && (
+                <div className={styles.actionButtons}>
+                  <button
+                    className={styles.editBtn}
+                    onClick={() => navigate(`/edit-answer/${answer.answer_id}`)}
+                  >
+                    ✏️ Edit
+                  </button>
+                  <button
+                    className={styles.deleteBtn}
+                    onClick={(e) => handleDeleteAnswer(answer.answer_id, e)}
+                  >
+                    🗑️ Delete
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className={styles.answerMeta}>
+              <span className={styles.answerDate}>
+                Answered on {new Date(answer.createdAt).toLocaleDateString()}
+              </span>
+            </div>
+          </div>
+        ))
       )}
 
-      {/* Answer Form */}
+      {/* Form to post a new answer */}
       <div className={styles.answerFormCard}>
         <h4 className={styles.cardTitle}>Your Answer</h4>
         <form onSubmit={handleSubmitAnswer}>
@@ -325,8 +326,7 @@ const QuestionDetail = () => {
           >
             {answerLoading ? (
               <>
-                <ClipLoader size={20} color="#fff" />
-                Posting Answer...
+                <ClipLoader size={20} color="#fff" /> Posting Answer...
               </>
             ) : (
               "Post Your Answer"

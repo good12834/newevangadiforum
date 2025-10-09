@@ -18,23 +18,29 @@ import EditQuestion from "./pages/EditQuestion/EditQuestion";
 import EditAnswer from "./pages/EditAnswer/EditAnswer";
 
 function App() {
+  // Access user state from context
   const [user, setUser] = useContext(UserContext);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const token = localStorage.getItem("token");
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true); // Shows loading state while checking authentication
+  const [error, setError] = useState(null); // Stores any authentication error messages
+  const token = localStorage.getItem("token"); // Get JWT token from localStorage
+  const navigate = useNavigate(); // For programmatic navigation
 
+  // Function to check if the token is expired
   function isTokenExpired(token) {
     try {
       const decoded = jwtDecode(token);
+      // JWT exp is in seconds, convert to milliseconds and compare with current time
       return decoded.exp * 1000 < Date.now();
     } catch (e) {
+      // If decoding fails, treat token as expired
       return true;
     }
   }
 
+  // Function to check user authentication
   async function checkUser() {
     if (!token || isTokenExpired(token)) {
+      // If no token or token expired, log the user out
       localStorage.removeItem("token");
       setUser(null);
       setLoading(false);
@@ -42,45 +48,49 @@ function App() {
     }
 
     try {
+      // Verify the token with backend
       const { data } = await axiosInstance.get("/users/check", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      // ✅ FIX: Ensure user data is properly set with correct property names
+      // Decode the token to extract user info
       const decoded = jwtDecode(token);
       setUser({
-        user_id: decoded.userid, // Map to user_id
-        user_name: decoded.username, // Map to user_name
+        user_id: decoded.userid, // Map token field to context field
+        user_name: decoded.username,
         token: token,
       });
     } catch (error) {
       console.error("Authentication error:", error.message);
+      // If any error occurs during check, remove token and log out
       localStorage.removeItem("token");
       setUser(null);
       setError("Failed to authenticate. Please log in again.");
     } finally {
-      setLoading(false);
+      setLoading(false); // Done checking user
     }
   }
 
+  // Check authentication when the app loads or token changes
   useEffect(() => {
     if (token) {
       checkUser();
     } else {
       setLoading(false);
-      setUser(null); // Ensure user is null when no token
+      setUser(null); // Ensure user is null if no token
     }
   }, [token]);
 
-  // ✅ FIX: Add useEffect to persist user data
+  // Log when user context changes (for debugging)
   useEffect(() => {
     if (user) {
       console.log("🔄 App - User context updated:", user);
     }
   }, [user]);
 
+  // Show loader while checking user
   if (loading) {
     return (
       <div className="loader">
@@ -90,11 +100,14 @@ function App() {
   }
 
   return (
-    <div className="app-layout">
+    <div>
+      {/* Header is visible on all pages */}
       <Header />
-      <div className="app-content">
+
+      <div>
         <Routes>
-          {/* Public Routes - Redirect to home if logged in */}
+          {/* ----------------------- PUBLIC ROUTES ----------------------- */}
+          {/* Landing page and login/register routes */}
           <Route
             path="/"
             element={token ? <Navigate to="/home" /> : <LandingPage />}
@@ -113,7 +126,8 @@ function App() {
           />
           <Route path="/how-it-works" element={<HowItWorks />} />
 
-          {/* Protected Routes - Require authentication */}
+          {/* ----------------------- PROTECTED ROUTES ----------------------- */}
+          {/* User must be logged in to access these */}
           <Route
             path="/home"
             element={
@@ -138,7 +152,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          {/* Add Edit Routes */}
+          {/* Edit question/answer pages */}
           <Route
             path="/edit-question/:question_id"
             element={
@@ -157,6 +171,8 @@ function App() {
           />
         </Routes>
       </div>
+
+      {/* Footer is visible on all pages */}
       <Footer />
     </div>
   );

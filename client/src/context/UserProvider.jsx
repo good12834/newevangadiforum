@@ -15,16 +15,16 @@ export function UserProvider({ children }) {
       if (token) {
         try {
           const decoded = jwtDecode(token);
-          console.log("✅ UserProvider - Decoded token:", decoded);
+          console.log(" UserProvider - Decoded token:", decoded);
 
-          // ✅ FIX: Create stable user object with correct mappings
+          
           const userData = {
-            user_id: decoded.userid, // Map backend 'userid' to frontend 'user_id'
-            user_name: decoded.username, // Map backend 'username' to frontend 'user_name'
+            user_id: decoded.userid, 
+            user_name: decoded.username, 
             token: token,
           };
 
-          console.log("✅ UserProvider - Setting user:", userData);
+          console.log(" UserProvider - Setting user:", userData);
           setUser(userData);
         } catch (error) {
           console.error("❌ UserProvider - Token decode error:", error);
@@ -41,7 +41,6 @@ export function UserProvider({ children }) {
     initializeUser();
   }, []);
 
-  // ✅ FIX: Create a stable setUser function that doesn't cause unnecessary re-renders
   const setUserStable = (newUser) => {
     console.log("🔄 UserProvider - Setting new user:", newUser);
     if (newUser === null) {
@@ -49,7 +48,6 @@ export function UserProvider({ children }) {
       return;
     }
 
-    // Ensure consistent property names
     setUser({
       user_id: newUser.user_id || newUser.userid,
       user_name: newUser.user_name || newUser.username,
