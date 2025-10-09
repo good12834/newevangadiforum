@@ -45,6 +45,3 @@ Users can register, log in, post questions, and share answers — fostering lear
 git clone <repository-url>
 cd evangadi-community-qa
 
-
-## 🏗️ Project Structure
-
