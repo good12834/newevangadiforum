@@ -6,18 +6,20 @@ import axiosInstance from "../../API/axios";
 import { ClipLoader } from "react-spinners";
 import { jwtDecode } from "jwt-decode";
 
+
 function Login() {
-  const navigate = useNavigate();
-  const [user, setUser] = useContext(UserContext);
+  const navigate = useNavigate(); // Navigation after successful login
+  const [user, setUser] = useContext(UserContext); // Global user state
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-  });
+  }); // Form fields
 
-  const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(""); // Error message state
+  const [successMessage, setSuccessMessage] = useState(""); // Success message state
+  const [loading, setLoading] = useState(false); // Loading state for button/spinner
 
+  // Update form state on input change
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -25,12 +27,14 @@ function Login() {
     });
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccessMessage("");
     setLoading(true);
 
+    // Basic validation
     if (!formData.email || !formData.password) {
       setError("Both fields are required!");
       setLoading(false);
@@ -38,34 +42,37 @@ function Login() {
     }
 
     try {
+      // API call to login endpoint
       const response = await axiosInstance.post("/users/login", formData);
       setSuccessMessage(response.data.msg);
 
       const token = response.data.token;
-      localStorage.setItem("token", token);
+      localStorage.setItem("token", token); // Save token to localStorage
 
-      // ✅ FIX: Decode and set user with proper mapping
+      // Decode JWT to get user info
       const decoded = jwtDecode(token);
       console.log("🔍 Login - Decoded token:", decoded);
 
-      // ✅ FIX: Set user with correct property mapping
+      // Update global user context
       setUser({
         user_id: decoded.userid, // Map to user_id
         user_name: decoded.username, // Map to user_name
         token: token,
       });
 
-      // ✅ FIX: Add small delay to ensure context is updated
+      // Small delay to ensure context updates before navigation
       setTimeout(() => {
         navigate("/home");
       }, 100);
     } catch (error) {
       console.error("Login error:", error);
+
+      // Show server-provided message or generic error
       setError(
         error.response?.data?.msg || "Something went wrong! Please try again."
       );
     }
-    setLoading(false);
+    setLoading(false); // Always stop loading
   };
 
   return (
@@ -96,6 +103,7 @@ function Login() {
               />
             </div>
 
+            {/* Display errors or success messages */}
             {error && <div className={styles.error}>{error}</div>}
             {successMessage && (
               <div className={styles.success}>{successMessage}</div>
@@ -105,6 +113,7 @@ function Login() {
               <Link to="/forget-password">Forgot your password?</Link>
             </h3>
 
+            {/* Submit button with loading spinner */}
             <button
               type="submit"
               className={styles.submitButton}
@@ -121,6 +130,7 @@ function Login() {
             </button>
           </form>
 
+          {/* Link to registration page */}
           <h3 className={styles.registerLink}>
             Don't have an account?{" "}
             <Link
@@ -134,6 +144,7 @@ function Login() {
         </div>
       </div>
 
+      {/* Right side: illustration and info */}
       <div className={styles.rightWrapperLogin}>
         <div className={styles.overridephoto}>
           <svg width="80" height="80" xmlns="http://www.w3.org/2000/svg">

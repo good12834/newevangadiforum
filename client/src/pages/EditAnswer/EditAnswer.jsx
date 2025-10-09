@@ -7,21 +7,24 @@ import DOMPurify from "dompurify";
 import axiosInstance from "../../API/axios";
 
 function EditAnswer() {
-  const { answer_id } = useParams();
-  const navigate = useNavigate();
-  const [user] = useContext(UserContext);
-  const token = localStorage.getItem("token");
+  const { answer_id } = useParams(); // Get answer ID from URL
+  const navigate = useNavigate(); // Navigate after update or discard
+  const [user] = useContext(UserContext); // Current logged-in user
+  const token = localStorage.getItem("token"); // JWT token
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [answer, setAnswer] = useState("");
-  const [originalAnswer, setOriginalAnswer] = useState("");
+  const [loading, setLoading] = useState(true); // Loading state while fetching answer
+  const [error, setError] = useState(""); // Error messages
+  const [answer, setAnswer] = useState(""); // Current answer content
+  const [originalAnswer, setOriginalAnswer] = useState(""); // Original answer to allow discard
 
+  // Fetch answer data on mount
   useEffect(() => {
     const fetchAnswer = async () => {
       try {
         const response = await axiosInstance.get(`/answers/${answer_id}`);
         console.log("Answer data:", response.data);
+
+        // Set answer content and original content
         setAnswer(response.data.answer || "");
         setOriginalAnswer(response.data.answer || "");
         setLoading(false);
@@ -37,30 +40,36 @@ function EditAnswer() {
     }
   }, [answer_id, token]);
 
+  // Handle form submission to update answer
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Basic validation
     if (!answer.trim()) {
       setError("Answer cannot be empty");
       return;
     }
 
     try {
+      // Update answer on backend
       await axiosInstance.put(`/answers/${answer_id}`, {
         answer: answer.trim(),
       });
-      
-      navigate(-1); // Go back to previous page
+
+      navigate(-1); // Go back to previous page after successful update
     } catch (err) {
       console.error("Update error:", err);
       setError("Failed to update answer. Please try again.");
     }
   };
 
+  // Discard changes and reset to original answer
   const handleDiscard = () => {
-    setAnswer(originalAnswer);
-    navigate(-1);
+    setAnswer(originalAnswer); // Reset content to original
+    navigate(-1); // Go back to previous page
   };
 
+  // Show loading while fetching
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
@@ -75,6 +84,7 @@ function EditAnswer() {
       {error && <div className={styles.errorMessage}>{error}</div>}
 
       <form onSubmit={handleSubmit} className={styles.form}>
+        {/* Answer input field */}
         <div className={styles.formGroup}>
           <label htmlFor="answer" className={styles.label}>
             Your Answer
@@ -90,6 +100,7 @@ function EditAnswer() {
           />
         </div>
 
+        {/* Action buttons */}
         <div className={styles.buttonGroup}>
           <button type="submit" className={styles.submitButton}>
             Save Changes

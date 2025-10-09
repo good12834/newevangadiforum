@@ -5,43 +5,47 @@ import styles from "./AskQuestion.module.css";
 import axiosInstance from "../../API/axios";
 
 function AskQuestion() {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [tag, setTag] = useState("");
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  // State for form inputs
+  const [title, setTitle] = useState(""); // Question title
+  const [description, setDescription] = useState(""); // Detailed question description
+  const [tag, setTag] = useState(""); // Category/tag
+  const [success, setSuccess] = useState(false); // Success message state
+  const [error, setError] = useState(""); // Error message state
+  const [loading, setLoading] = useState(false); // Loading state while submitting
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess(false);
-    setLoading(true);
+    setError(""); // Reset previous error
+    setSuccess(false); // Reset success
+    setLoading(true); // Set loading while sending request
 
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token"); // JWT token for authorization
 
+      // Send POST request to backend to create a question
       const res = await axiosInstance.post(
         "/question",
         {
           title,
           question_description: description,
-          tag: tag || "general",
+          tag: tag || "general", // Default to 'general' if no tag provided
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, // Attach token
           },
         }
       );
 
       console.log("Server response:", res.data);
 
+      // Reset form and show success message
       setSuccess(true);
       setTitle("");
       setDescription("");
       setTag("");
-      setTimeout(() => setSuccess(false), 5000);
+      setTimeout(() => setSuccess(false), 5000); // Hide success message after 5s
     } catch (err) {
       console.error(err);
       setError(
@@ -49,7 +53,7 @@ function AskQuestion() {
           "❌ Failed to post your question. Please try again."
       );
     } finally {
-      setLoading(false);
+      setLoading(false); // Stop loading regardless of outcome
     }
   };
 
@@ -64,11 +68,12 @@ function AskQuestion() {
       </div>
 
       <div className={styles.content}>
-        {/* Steps Section */}
+        {/* Steps Section - Guide users on how to write a good question */}
         <section className={styles.guideSection}>
           <div className={styles.guideCard}>
             <h2>📝 Writing a Good Question</h2>
             <div className={styles.steps}>
+              {/* Step 1 */}
               <div className={styles.step}>
                 <span className={styles.stepNumber}>1</span>
                 <div className={styles.stepContent}>
@@ -79,6 +84,7 @@ function AskQuestion() {
                   </p>
                 </div>
               </div>
+              {/* Step 2 */}
               <div className={styles.step}>
                 <span className={styles.stepNumber}>2</span>
                 <div className={styles.stepContent}>
@@ -89,6 +95,7 @@ function AskQuestion() {
                   </p>
                 </div>
               </div>
+              {/* Step 3 */}
               <div className={styles.step}>
                 <span className={styles.stepNumber}>3</span>
                 <div className={styles.stepContent}>
@@ -99,6 +106,7 @@ function AskQuestion() {
                   </p>
                 </div>
               </div>
+              {/* Step 4 */}
               <div className={styles.step}>
                 <span className={styles.stepNumber}>4</span>
                 <div className={styles.stepContent}>
@@ -116,6 +124,7 @@ function AskQuestion() {
         <section className={styles.formSection}>
           <div className={styles.formCard}>
             <form onSubmit={handleSubmit} className={styles.form}>
+              {/* Tag input */}
               <div className={styles.formGroup}>
                 <label htmlFor="tag" className={styles.label}>
                   Category/Tag
@@ -133,6 +142,7 @@ function AskQuestion() {
                 </small>
               </div>
 
+              {/* Title input */}
               <div className={styles.formGroup}>
                 <label htmlFor="title" className={styles.label}>
                   Question Title
@@ -151,6 +161,7 @@ function AskQuestion() {
                 </small>
               </div>
 
+              {/* Description textarea */}
               <div className={styles.formGroup}>
                 <label htmlFor="description" className={styles.label}>
                   Detailed Question
@@ -170,6 +181,7 @@ function AskQuestion() {
                 </small>
               </div>
 
+              {/* Submit button */}
               <button
                 type="submit"
                 className={`${styles.submitButton} ${
@@ -188,7 +200,7 @@ function AskQuestion() {
               </button>
             </form>
 
-            {/* Messages */}
+            {/* Success Message */}
             {success && (
               <div className={styles.successMessage}>
                 <span className={styles.successIcon}>✅</span>
@@ -202,6 +214,7 @@ function AskQuestion() {
               </div>
             )}
 
+            {/* Error Message */}
             {error && (
               <div className={styles.errorMessage}>
                 <span className={styles.errorIcon}>⚠️</span>

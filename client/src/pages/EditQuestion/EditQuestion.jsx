@@ -9,19 +9,18 @@ import DOMPurify from "dompurify";
 import "quill/dist/quill.snow.css";
 import Quill from "quill";
 import axiosInstance from "../../API/axios";
-
 const EditQuestion = () => {
-  const { question_id } = useParams();
-  const navigate = useNavigate();
-  const [user] = useContext(UserContext);
-  const { questions, setQuestions } = useContext(QuestionContext);
-  const token = localStorage.getItem("token");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [editorContent, setEditorContent] = useState("");
-  const [originalContent, setOriginalContent] = useState("");
-  const quillRef = useRef(null);
-  const quillInstance = useRef(null);
+  const { question_id } = useParams(); // Get question ID from URL
+  const navigate = useNavigate(); // Navigate after update or discard
+  const [user] = useContext(UserContext); // Current logged-in user
+  const { questions, setQuestions } = useContext(QuestionContext); // Questions state
+  const token = localStorage.getItem("token"); // JWT token
+  const [loading, setLoading] = useState(true); // Loading state while fetching question
+  const [error, setError] = useState(""); // Error messages
+  const [editorContent, setEditorContent] = useState(""); // Content in Quill editor
+  const [originalContent, setOriginalContent] = useState(""); // Original content for comparison
+  const quillRef = useRef(null); // DOM reference for Quill editor
+  const quillInstance = useRef(null); // Quill instance reference
 
   const {
     register,
@@ -29,34 +28,40 @@ const EditQuestion = () => {
     setValue,
     reset,
     formState: { errors },
-  } = useForm();
+  } = useForm(); // React Hook Form for validation
 
+  // Find question in context state
   const question = questions.find((q) => q.question_id == question_id);
 
+  // Fetch question data on mount or when question_id changes
   useEffect(() => {
     const fetchQuestion = async () => {
       try {
         let questionData;
 
         if (!question) {
+          // Fetch from backend if not in local context
           const response = await axiosInstance.get(`/question/${question_id}`);
-
           questionData = response.data;
-          setQuestions((prev) => [...prev, questionData]);
+          setQuestions((prev) => [...prev, questionData]); // Update context
         } else {
           questionData = question;
         }
 
+        // Sanitize HTML content to prevent XSS
         const sanitizedContent = DOMPurify.sanitize(
           questionData.question_description || ""
         );
 
         setEditorContent(sanitizedContent);
         setOriginalContent(sanitizedContent);
+
+        // Populate form fields with fetched data
         reset({
           title: questionData.title,
           tag: questionData.tag || "",
         });
+
         setLoading(false);
       } catch (err) {
         console.error("Fetch error:", err);
@@ -70,6 +75,7 @@ const EditQuestion = () => {
     }
   }, [question, question_id, token, reset, setQuestions]);
 
+  // Initialize Quill editor
   useEffect(() => {
     if (quillRef.current && !quillInstance.current) {
       quillInstance.current = new Quill(quillRef.current, {
@@ -86,7 +92,10 @@ const EditQuestion = () => {
         },
       });
 
+      // Set initial content
       quillInstance.current.root.innerHTML = editorContent;
+
+      // Update editorContent state on text change
       quillInstance.current.on("text-change", () => {
         setEditorContent(
           DOMPurify.sanitize(quillInstance.current.root.innerHTML)
@@ -95,6 +104,7 @@ const EditQuestion = () => {
     }
   }, [editorContent]);
 
+  // Handle form submission
   const onSubmit = async (data) => {
     if (!editorContent.trim()) {
       setError("Question description cannot be empty");
@@ -108,15 +118,17 @@ const EditQuestion = () => {
         tag: data.tag || "",
       };
 
+      // Send PUT request to update question
       await axiosInstance.put(`/question/${question_id}`, updatedQuestion);
 
-      // Update local state
+      // Update question in local context
       setQuestions((prev) =>
         prev.map((q) =>
           q.question_id == question_id ? { ...q, ...updatedQuestion } : q
         )
       );
 
+      // Navigate to question detail page
       navigate(`/questions/${question_id}`);
     } catch (err) {
       console.error("Update error:", err);
@@ -124,10 +136,12 @@ const EditQuestion = () => {
     }
   };
 
+  // Handle discard action
   const handleDiscard = () => {
-    navigate(-1);
+    navigate(-1); // Go back to previous page
   };
 
+  // Show loading message while fetching
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
@@ -146,6 +160,7 @@ const EditQuestion = () => {
       {error && <div className={styles.errorMessage}>{error}</div>}
 
       <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
+        {/* Question Title */}
         <div className={styles.formGroup}>
           <label htmlFor="title" className={styles.label}>
             Question Title
@@ -168,6 +183,7 @@ const EditQuestion = () => {
           )}
         </div>
 
+        {/* Question Preview */}
         <div className={styles.formGroup}>
           <label className={styles.label}>Question Preview</label>
           <div
@@ -176,6 +192,7 @@ const EditQuestion = () => {
           />
         </div>
 
+        {/* Quill Editor for editing description */}
         <div className={styles.formGroup}>
           <label className={styles.label}>Edit Question Description</label>
           <div ref={quillRef} className={styles.quillEditor}></div>
@@ -185,6 +202,7 @@ const EditQuestion = () => {
           </small>
         </div>
 
+        {/* Tags */}
         <div className={styles.formGroup}>
           <label htmlFor="tag" className={styles.label}>
             Tags (Optional)
@@ -201,6 +219,7 @@ const EditQuestion = () => {
           </small>
         </div>
 
+        {/* Action buttons */}
         <div className={styles.buttonGroup}>
           <button type="submit" className={styles.submitButton}>
             Save Changes

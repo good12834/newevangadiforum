@@ -2,37 +2,37 @@ import React, { useEffect, useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
 import { IoIosArrowDropright } from "react-icons/io";
-import axios from "axios";
+import axios from "axios"; // Not used; axiosInstance is used instead
 import { QuestionContext } from "../../context/QuestionProvider";
 import { UserContext } from "../../context/UserProvider";
-import DOMPurify from "dompurify";
+import DOMPurify from "dompurify"; // To safely render HTML
 import styles from "./HomePage.module.css";
 import { ClipLoader } from "react-spinners";
-import axiosInstance from "../../API/axios";
+import axiosInstance from "../../API/axios"; // Custom axios instance
 
 const HomePage = () => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token"); // Auth token
   const { questions, setQuestions } = useContext(QuestionContext);
   const [user] = useContext(UserContext);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const questionsPerPage = 7;
+  const [loading, setLoading] = useState(true); // Loading state for fetch
+  const [error, setError] = useState(""); // Error state
+  const [searchQuery, setSearchQuery] = useState(""); // Search input
+  const [currentPage, setCurrentPage] = useState(1); // Pagination
+  const questionsPerPage = 7; // Number of questions per page
   const navigate = useNavigate();
 
+  // Fetch all questions when component mounts
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
         console.log("Fetching questions...");
         const response = await axiosInstance.get("/question", {
-          // Fixed endpoint
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, // Auth header
           },
         });
         console.log("Questions data:", response.data);
-        setQuestions(response.data); 
+        setQuestions(response.data); // Save questions in context
       } catch (err) {
         console.error("API Error:", err);
         setError(
@@ -45,15 +45,16 @@ const HomePage = () => {
     };
 
     if (token) {
-      fetchQuestions();
+      fetchQuestions(); // Only fetch if token exists
     } else {
       setLoading(false);
       setError("No authentication token found");
     }
   }, [token, setQuestions]);
 
+  // Delete question function
   const handleDelete = async (question_id, e) => {
-    e.stopPropagation();
+    e.stopPropagation(); // Prevent parent click (navigation)
 
     if (!user?.user_id) {
       console.error("User not logged in.");
@@ -63,14 +64,14 @@ const HomePage = () => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this question?"
     );
-
     if (!confirmDelete) return;
 
     try {
       await axiosInstance.delete(`/question/${question_id}`, {
-        data: { user_id: user.user_id },
+        data: { user_id: user.user_id }, // Auth user ID sent in body
       });
 
+      // Remove question from local state after deletion
       setQuestions((prevQuestions) =>
         prevQuestions.filter((question) => question.question_id !== question_id)
       );
@@ -80,7 +81,7 @@ const HomePage = () => {
     }
   };
 
-  // Filter questions based on search
+  // Filter questions by search query
   const filteredQuestions = questions.filter(
     (question) =>
       question.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -89,7 +90,7 @@ const HomePage = () => {
         .includes(searchQuery.toLowerCase())
   );
 
-  // Pagination
+  // Pagination logic
   const indexOfLastQuestion = currentPage * questionsPerPage;
   const indexOfFirstQuestion = indexOfLastQuestion - questionsPerPage;
   const currentQuestions = filteredQuestions.slice(
@@ -98,7 +99,7 @@ const HomePage = () => {
   );
   const totalPages = Math.ceil(filteredQuestions.length / questionsPerPage);
 
-  // Date formatting helper
+  // Helper function to format date
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -109,7 +110,7 @@ const HomePage = () => {
 
   return (
     <div className={styles.homeContainer}>
-      {/* Header Section */}
+      {/* Header with welcome message and Ask Question button */}
       <header className={styles.homeHeader}>
         <div className={styles.welcomeUser}>
           <h1>Welcome, {user?.user_name}!</h1>
@@ -123,7 +124,7 @@ const HomePage = () => {
         </button>
       </header>
 
-      {/* Search Section */}
+      {/* Search input */}
       <div className={styles.searchContainer}>
         <input
           type="text"
@@ -134,7 +135,7 @@ const HomePage = () => {
         />
       </div>
 
-      {/* Loading State */}
+      {/* Loading state */}
       {loading && (
         <div className={styles.loadingContainer}>
           <ClipLoader size={40} color="#f48024" />
@@ -142,10 +143,10 @@ const HomePage = () => {
         </div>
       )}
 
-      {/* Error State */}
+      {/* Error message */}
       {error && <p className={styles.errorMessage}>{error}</p>}
 
-      {/* Empty State */}
+      {/* Empty state */}
       {!loading && !error && filteredQuestions.length === 0 && (
         <div className={styles.emptyState}>
           <h3>No questions found</h3>
@@ -165,7 +166,7 @@ const HomePage = () => {
         </div>
       )}
 
-      {/* Questions List */}
+      {/* Questions list */}
       {!loading && !error && filteredQuestions.length > 0 && (
         <div className={styles.questionsList}>
           {currentQuestions.map((question) => (
@@ -175,13 +176,13 @@ const HomePage = () => {
               onClick={() => navigate(`/questions/${question.question_id}`)}
             >
               <div className={styles.questionCard}>
-                {/* User Profile */}
+                {/* User profile */}
                 <div className={styles.profileSection}>
                   <FaUserCircle className={styles.profileIcon} />
                   <span className={styles.username}>{question?.user_name}</span>
                 </div>
 
-                {/* Question Content */}
+                {/* Question content */}
                 <div className={styles.content}>
                   <h3 className={styles.contentTitle}>
                     <Link to={`/questions/${question.question_id}`}>
@@ -189,6 +190,7 @@ const HomePage = () => {
                     </Link>
                   </h3>
 
+                  {/* Question description with safe HTML */}
                   <div
                     className={styles.description}
                     dangerouslySetInnerHTML={{
@@ -198,22 +200,19 @@ const HomePage = () => {
                     }}
                   />
 
-                  {/* Meta Information */}
+                  {/* Meta information: tags and date */}
                   <div className={styles.meta}>
-                    {/* Tags */}
                     {question.tag && (
                       <div className={styles.tags}>
                         <span className={styles.tag}>{question.tag}</span>
                       </div>
                     )}
-
-                    {/* Date */}
                     <div className={styles.date}>
                       Asked {formatDate(question.createdAt)}
                     </div>
                   </div>
 
-                  {/* ✅ FIXED: Action Buttons - MOVED OUTSIDE meta section */}
+                  {/* Action buttons for owner */}
                   {user?.user_id === question.user_id && (
                     <div className={styles.actionButtons}>
                       <button
@@ -227,7 +226,7 @@ const HomePage = () => {
                 </div>
               </div>
 
-              {/* Arrow Navigation */}
+              {/* Right arrow navigation */}
               <Link
                 to={`/questions/${question.question_id}`}
                 className={styles.arrow}
@@ -239,7 +238,7 @@ const HomePage = () => {
         </div>
       )}
 
-      {/* Pagination */}
+      {/* Pagination controls */}
       {!loading && filteredQuestions.length > 0 && (
         <div className={styles.pagination}>
           <button
