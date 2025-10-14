@@ -7,7 +7,7 @@ Users can register, log in, post questions, and share answers — fostering lear
 
 ## 🚀 Live Preview
 
-🔗 **Frontend (React):** [https://evangadi-community-qa.netlify.app/](https://evangadiforum.abdisaketema.com/)  
+🔗 **Frontend (React):** [https://evangadiforum.abdisaketema.com/](https://evangadiforum.abdisaketema.com/)  
 💾 **Backend (Node.js + Express):** Hosted API connected to MySQL
 
 ---
