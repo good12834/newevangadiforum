@@ -1,13 +1,32 @@
 const mysql2 = require("mysql2");
 require("dotenv").config();
 
-const dbConnection = mysql2.createPool({
-  user: process.env.DB_USER,
-  database: process.env.DB_NAME,
-  host: process.env.DB_HOST,
-  password: process.env.DB_PASSWORD,
-  connectionLimit: 1000,
-});
+// Use Railway's MYSQL_URL if available, otherwise fall back to individual variables
+let dbConfig;
+
+if (process.env.MYSQL_URL) {
+  // Parse Railway's MYSQL_URL format: mysql://user:password@host:port/database
+  const url = new URL(process.env.MYSQL_URL);
+  dbConfig = {
+    host: url.hostname,
+    port: url.port,
+    user: url.username,
+    password: url.password,
+    database: url.pathname.substring(1), // Remove leading slash
+    connectionLimit: 1000,
+  };
+} else {
+  // Fallback to individual environment variables
+  dbConfig = {
+    user: process.env.DB_USER,
+    database: process.env.DB_NAME,
+    host: process.env.DB_HOST,
+    password: process.env.DB_PASSWORD,
+    connectionLimit: 1000,
+  };
+}
+
+const dbConnection = mysql2.createPool(dbConfig);
 
 dbConnection.execute("SELECT 'test'", (err, result) => {
   if (err) {
