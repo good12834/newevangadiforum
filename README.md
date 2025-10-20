@@ -1,47 +1,116 @@
-# 🌍 [Evangadi Community Q&A Platform](https://evangadiforum.abdisaketema.com/)
+# Evangadi Forum
 
-A **full-stack community-driven Question & Answer platform** built for and by **Evangadi Community**.  
-Users can register, log in, post questions, and share answers — fostering learning and collaboration among developers.
+A full-stack forum application built with Node.js, Express, React, and MySQL.
 
----
+## Features
 
-## 🚀 Live Preview
+- User registration and authentication
+- JWT-based authentication
+- Question and answer system
+- Responsive React frontend
+- MySQL database
 
-🔗 **Frontend (React):** [https://evangadiforum.abdisaketema.com/](https://evangadiforum.abdisaketema.com/)  
-💾 **Backend (Node.js + Express):** Hosted API connected to MySQL
+## Deployment to Render
 
----
+### Prerequisites
 
-## ✨ Features
+1. **GitHub Repository**: Push your code to a GitHub repository
+2. **Render Account**: Sign up at [render.com](https://render.com)
+3. **Database**: Set up a MySQL database (recommended: PlanetScale, Railway, or AWS RDS)
 
-- 🔐 **User Authentication:** Secure JWT-based login and registration  
-- 💬 **Ask & Answer:** Post, view, and reply to questions  
-- ✏️ **Edit & Delete:** Manage your own questions and answers  
-- ⚙️ **Protected Routes:** Access control for authenticated users  
-- 💾 **Persistent Storage:** MySQL database with user, question, and answer tables  
-- 📱 **Responsive UI:** Optimized for desktop and mobile  
-- 🚀 **Full REST API Integration:** React frontend + Node backend seamlessly connected  
+### Database Setup
 
----
+For production, you'll need an external MySQL database. Here are some free/paid options:
 
-## 🧩 Tech Stack
+1. **PlanetScale** (Recommended - Free tier available)
+   - Go to [planetscale.com](https://planetscale.com)
+   - Create a database
+   - Get your connection details
 
-| Layer | Technologies |
-|--------|---------------|
-| **Frontend** | React.js, React Router, Axios, Context API, CSS Modules, Lucide Icons, React Toastify |
-| **Backend** | Node.js, Express.js |
-| **Database** | MySQL |
-| **Authentication** | JSON Web Token (JWT) |
-| **Security** | bcrypt password hashing |
-| **Deployment** | Netlify (Frontend), Render (Backend) |
+2. **Railway**
+   - Go to [railway.app](https://railway.app)
+   - Create a MySQL database
+   - Get connection details
 
+### Render Deployment Steps
 
----
+1. **Connect Repository**
+   - Go to [render.com](https://render.com) and sign in
+   - Click "New +" and select "Web Service"
+   - Connect your GitHub repository
 
-## ⚙️ Installation & Setup
+2. **Configure Service**
+   - **Name**: evangadi-forum (or your preferred name)
+   - **Runtime**: Node
+   - **Build Command**: `npm run build`
+   - **Start Command**: `npm start`
+   - **Root Directory**: (leave empty)
 
-### 1️⃣ Clone the project
-```bash
-git clone <repository-url>
-cd evangadi-community-qa
+3. **Environment Variables**
+   Set these in Render's Environment section:
 
+   ```
+   NODE_ENV=production
+   JWT_SECRET=your-secure-jwt-secret-here
+   FRONTEND_URL=https://your-app-name.onrender.com
+   DB_HOST=your-database-host
+   DB_USER=your-database-user
+   DB_PASSWORD=your-database-password
+   DB_NAME=your-database-name
+   PORT=10000
+   ```
+
+4. **Deploy**
+   - Click "Create Web Service"
+   - Wait for deployment to complete
+   - Your app will be available at `https://your-app-name.onrender.com`
+
+### Alternative: Using render.yaml
+
+If you prefer using the render.yaml file:
+
+1. Push the `render.yaml` file to your repository
+2. In Render, select "Blueprint" instead of "Web Service"
+3. Connect your repository
+4. The configuration will be automatically applied
+
+## Local Development
+
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Set up your `.env` file with local database credentials
+4. Run development server: `npm run dev`
+5. Build for production: `npm run build`
+6. Start production server: `npm start`
+
+## Project Structure
+
+```
+Evangadi-Forum/
+├── client/          # React frontend
+├── controller/      # API controllers
+├── db/             # Database configuration and schemas
+├── middleware/     # Authentication middleware
+├── routes/         # API routes
+├── app.js          # Main server file
+└── package.json    # Dependencies and scripts
+```
+
+## API Endpoints
+
+- `POST /api/users/register` - User registration
+- `POST /api/users/login` - User login
+- `GET /api/users/check` - Check user authentication
+- `POST /api/users/forget-password` - Password reset
+- `GET /api/question` - Get questions
+- `POST /api/question` - Create question
+- `GET /api/answers` - Get answers
+- `POST /api/answers` - Create answer
+
+## Technologies Used
+
+- **Backend**: Node.js, Express.js
+- **Frontend**: React, Vite
+- **Database**: MySQL
+- **Authentication**: JWT
+- **Styling**: CSS Modules

@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 const dbConnection = require("./db/dbConfig");
 const createTables = require("./db/dbSchema");
 
@@ -14,6 +15,9 @@ const port = process.env.PORT || 5500;
 app.use(cors());
 app.use(express.json());
 
+// Serve static files from the React app build directory
+app.use(express.static(path.join(__dirname, 'client/dist')));
+
 // Routes
 app.use("/api/users", userRoutes);
 app.use("/api/question", questionRoutes);
@@ -27,9 +31,14 @@ app.get("/", (req, res) => {
   res.json({ message: "Welcome to Evangadi Forum backend" });
 });
 
-// 404 handler
+// Catch all handler: send back React's index.html file for client-side routing
 app.use((req, res) => {
-  res.status(404).json({ message: "Route not found" });
+  // Only serve index.html for non-API routes
+  if (!req.originalUrl.startsWith('/api')) {
+    res.sendFile(path.join(__dirname, 'client/dist/index.html'));
+  } else {
+    res.status(404).json({ message: "API Route not found" });
+  }
 });
 
 // Start server
