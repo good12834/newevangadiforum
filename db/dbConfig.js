@@ -22,17 +22,20 @@ if (process.env.MYSQL_URL) {
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
     password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT || 3306,
     connectionLimit: 1000,
   };
 }
 
+
 const dbConnection = mysql2.createPool(dbConfig);
 
+// Test connection
 dbConnection.execute("SELECT 'test'", (err, result) => {
   if (err) {
-    console.log(err.message);
+    console.log("Database connection failed:", err.message);
   } else {
-    console.log(result);
+    console.log("Database connected successfully");
   }
 });
 
