@@ -4,7 +4,7 @@ import { UserContext } from "../../context/UserProvider";
 import { QuestionContext } from "../../context/QuestionProvider";
 import axios from "axios";
 import styles from "./QuestionDetail.module.css";
-import { FaUserCircle } from "react-icons/fa";
+import { FaUserCircle, FaRobot, FaLightbulb } from "react-icons/fa";
 import { ClipLoader } from "react-spinners";
 import DOMPurify from "dompurify";
 import axiosInstance from "../../API/axios";
@@ -26,6 +26,13 @@ const QuestionDetail = () => {
   const [answerLoading, setAnswerLoading] = useState(false); // Loading state for posting an answer
   const [isUserStable, setIsUserStable] = useState(false); // Ensures user data is loaded before fetching
   const navigate = useNavigate(); // For programmatic navigation
+
+  // AI-specific state
+  const [aiAnswer, setAiAnswer] = useState(null); // AI generated answer
+  const [aiLoading, setAiLoading] = useState(false); // AI loading state
+  const [aiError, setAiError] = useState(""); // AI error message
+  const [aiSuggestion, setAiSuggestion] = useState(""); // AI suggestion for answer
+  const [suggestionLoading, setSuggestionLoading] = useState(false); // Suggestion loading
 
   // Wait until user context is stable
   useEffect(() => {
@@ -115,6 +122,63 @@ const QuestionDetail = () => {
     return userId == answerUserId;
   };
 
+  // Generate AI answer for the current question
+  const handleGetAiAnswer = async () => {
+    setAiLoading(true);
+    setAiError("");
+    setAiAnswer(null);
+
+    try {
+      const response = await axiosInstance.get(`/ai/answer/${question_id}`);
+      const data = response.data;
+      setAiAnswer(data);
+      // If the backend returned an error field, surface it in the frontend error state
+      if (data.error) {
+        setAiError(data.error);
+      }
+    } catch (error) {
+      console.error("AI Answer Error:", error);
+      setAiError(
+        error.response?.data?.message || "Failed to generate AI answer"
+      );
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  // Get AI suggestion while typing answer
+  const handleGetAiSuggestion = async () => {
+    if (!newAnswer.trim()) {
+      alert("Start writing your answer first, then ask for AI help!");
+      return;
+    }
+
+    setSuggestionLoading(true);
+    setAiSuggestion("");
+
+    try {
+      const response = await axiosInstance.post(
+        `/ai/suggestions/${question_id}`,
+        { partial_answer: newAnswer }
+      );
+      if (response.data.suggestion) {
+        setAiSuggestion(response.data.suggestion);
+      }
+    } catch (error) {
+      console.error("AI Suggestion Error:", error);
+    } finally {
+      setSuggestionLoading(false);
+    }
+  };
+
+  // Apply AI suggestion to the answer textarea
+  const handleApplyAiSuggestion = () => {
+    if (aiSuggestion) {
+      setNewAnswer((prev) => prev + "\n\n" + aiSuggestion);
+      setAiSuggestion("");
+    }
+  };
+
   // Submit a new answer
   const handleSubmitAnswer = async (e) => {
     e.preventDefault();
@@ -140,6 +204,7 @@ const QuestionDetail = () => {
           ) || [];
         setAnswers(questionAnswers);
         setNewAnswer(""); // Clear input
+        setAiSuggestion(""); // Clear AI suggestion
         alert("Answer posted successfully!");
       }
     } catch (error) {
@@ -209,15 +274,26 @@ const QuestionDetail = () => {
         <div className={styles.cardBody}>
           <div className={styles.questionHeader}>
             <h4 className={styles.cardTitle}>Question</h4>
-            {/* Edit button visible only if user owns the question */}
-            {canEditQuestion() && (
+            <div className={styles.headerActions}>
+              {/* AI Answer Button */}
               <button
-                className={styles.editBtn}
-                onClick={() => navigate(`/edit-question/${question_id}`)}
+                className={styles.aiButton}
+                onClick={handleGetAiAnswer}
+                disabled={aiLoading}
               >
-                ✏️ Edit Question
+                <FaRobot className={styles.aiIcon} />
+                {aiLoading ? "Generating..." : "🤖 Get AI Answer"}
               </button>
-            )}
+              {/* Edit button visible only if user owns the question */}
+              {canEditQuestion() && (
+                <button
+                  className={styles.editBtn}
+                  onClick={() => navigate(`/edit-question/${question_id}`)}
+                >
+                  ✏️ Edit Question
+                </button>
+              )}
+            </div>
           </div>
           <h5 className={styles.cardSubtitle}>{question.title}</h5>
           <div
@@ -241,6 +317,66 @@ const QuestionDetail = () => {
           )}
         </div>
       </div>
+
+      {/* AI Answer Section */}
+      {aiLoading && (
+        <div className={styles.aiAnswerCard}>
+          <div className={styles.aiLoadingContainer}>
+            <ClipLoader size={30} color="#7C3AED" />
+            <p>🤖 AI is analyzing the question and generating an answer...</p>
+          </div>
+        </div>
+      )}
+
+{aiAnswer?.error && (
+        <div className={styles.aiErrorCard}>
+          <div className={styles.aiErrorHeader}>
+            <FaRobot className={styles.aiIcon} />
+            <h4>🤖 AI Answer Unavailable</h4>
+          </div>
+          <p className={styles.aiErrorMessage}>
+            ⚠️ {aiAnswer.error}
+          </p>
+          {aiAnswer.error_type === "quota_exhausted" && (
+            <div className={styles.aiErrorHint}>
+              <p>💡 <strong>Tip:</strong> The AI service quota has been exceeded. 
+              You can either wait until tomorrow, or <a 
+                href="https://aistudio.google.com/apikey" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className={styles.apiKeyLink}
+                >get a new free API key</a> and update <code>GEMINI_API_KEY</code> in your <code>.env</code> file.</p>
+            </div>
+          )}
+          {aiAnswer.cached && (
+            <span className={styles.cachedBadge}>Cached Response</span>
+          )}
+        </div>
+      )}
+
+      {aiAnswer && !aiLoading && !aiAnswer.error && (
+        <div className={styles.aiAnswerCard}>
+          <div className={styles.aiAnswerHeader}>
+            <FaRobot className={styles.aiIcon} />
+            <h4>🤖 AI Generated Answer</h4>
+            {aiAnswer.cached && (
+              <span className={styles.cachedBadge}>Cached</span>
+            )}
+          </div>
+          <div
+            className={`${styles.aiAnswerContent} ${aiAnswer.error ? styles.aiAnswerError : ""}`}
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(
+                aiAnswer.ai_answer
+                  .replace(/###\s/g, "<h3>")
+                  .replace(/##\s/g, "<h2>")
+                  .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+                  .replace(/\n/g, "<br/>")
+              ),
+            }}
+          />
+        </div>
+      )}
 
       {/* Answers Section */}
       <div className={styles.answersCard}>
@@ -319,6 +455,53 @@ const QuestionDetail = () => {
               required
             />
           </div>
+
+          {/* AI Suggestion Section */}
+          <div className={styles.aiSuggestionSection}>
+            <button
+              type="button"
+              className={styles.aiSuggestionBtn}
+              onClick={handleGetAiSuggestion}
+              disabled={suggestionLoading}
+            >
+              <FaLightbulb className={styles.aiSuggestionIcon} />
+              {suggestionLoading
+                ? "Getting suggestion..."
+                : "💡 Get AI Suggestion"}
+            </button>
+
+            {suggestionLoading && (
+              <div className={styles.suggestionLoading}>
+                <ClipLoader size={16} color="#7C3AED" />
+                <span>AI is analyzing your answer...</span>
+              </div>
+            )}
+
+            {aiSuggestion && (
+              <div className={styles.aiSuggestionBox}>
+                <div className={styles.suggestionHeader}>
+                  <FaLightbulb className={styles.aiSuggestionIcon} />
+                  <strong>AI Suggestion</strong>
+                  <button
+                    type="button"
+                    className={styles.applySuggestionBtn}
+                    onClick={handleApplyAiSuggestion}
+                  >
+                    Apply Suggestion
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.dismissSuggestionBtn}
+                    onClick={() => setAiSuggestion("")}
+                  >
+                    ✕
+                  </button>
+                </div>
+                <p className={styles.suggestionText}>{aiSuggestion}</p>
+              </div>
+            )}
+          </div>
+
           <button
             type="submit"
             className={styles.submitButton}

@@ -107,6 +107,31 @@ const deleteAnswer = async (req, res) => {
   }
 };
 
+// Get single answer by ID
+const getAnswerById = async (req, res) => {
+  const { answer_id } = req.params;
+
+  try {
+    const [answer] = await dbConnection.query(
+      "SELECT answer_id, answer, question_id, user_id, createdAt FROM answerTable WHERE answer_id = ?",
+      [answer_id]
+    );
+
+    if (answer.length === 0) {
+      return res.status(StatusCodes.NOT_FOUND).json({
+        message: "Answer not found",
+      });
+    }
+
+    return res.status(StatusCodes.OK).json(answer[0]);
+  } catch (error) {
+    console.log("Get answer by ID error:", error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: "Internal server error",
+    });
+  }
+};
+
 // Edit answer
 const editAnswer = async (req, res) => {
   const userid = req.user?.userid;
@@ -159,4 +184,4 @@ const editAnswer = async (req, res) => {
   }
 };
 
-module.exports = { deleteAnswer, editAnswer, postAnswer, allAnswers };
+module.exports = { deleteAnswer, editAnswer, postAnswer, allAnswers, getAnswerById };

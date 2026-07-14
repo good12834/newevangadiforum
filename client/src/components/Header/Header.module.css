@@ -5,8 +5,10 @@
   left: 0;
   width: 100%;
   height: 80px;
-  background: #ffffff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background: rgba(75, 75, 99, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(99, 102, 241, 0.08);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -40,6 +42,7 @@
   height: 50px;
   width: auto;
   display: block;
+  filter: brightness(1.3) contrast(1.4);
 }
 
 /* Navigation */
@@ -62,10 +65,10 @@
 }
 
 .navLink {
-  color: #333;
+  color: #94a3b8;
   text-decoration: none;
   font-weight: 500;
-  font-size: 1rem;
+  font-size: 0.95rem;
   padding: 8px 12px;
   position: relative;
   transition: color 0.3s ease;
@@ -73,7 +76,7 @@
 }
 
 .navLink:hover {
-  color: #FF8500;
+  color: #ffffff;
 }
 
 .navLink::after {
@@ -83,8 +86,9 @@
   left: 0;
   width: 0;
   height: 2px;
-  background: #FF8500;
+  background: linear-gradient(90deg, #6366f1, #a78bfa);
   transition: width 0.3s ease;
+  border-radius: 2px;
 }
 
 .navLink:hover::after {
@@ -93,37 +97,38 @@
 
 /* Ask Question Link */
 .askQuestionLink {
-  background: #FF8500;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   color: white;
   padding: 10px 20px;
-  border-radius: 25px;
+  border-radius: 12px;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.9rem;
   transition: all 0.3s ease;
-  border: 2px solid #FF8500;
+  border: none;
   white-space: nowrap;
   line-height: 1.2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .askQuestionLink:hover {
-  background: transparent;
-  color: #FF8500;
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(255, 133, 0, 0.3);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
 }
 
 /* Sign In Button */
 .signInBtn {
-  background: #FF8500;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   color: white;
   padding: 10px 24px;
-  border-radius: 25px;
+  border-radius: 12px;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.9rem;
   transition: all 0.3s ease;
-  border: 2px solid #FF8500;
+  border: none;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   white-space: nowrap;
@@ -136,19 +141,22 @@
 }
 
 .signInBtn:hover {
-  background: transparent;
-  color: #FF8500;
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(255, 133, 0, 0.3);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
 }
 
-/* ✅ FIXED: Logout Button - Proper sizing */
+.signInContainer {
+  display: flex;
+  align-items: center;
+}
+
+/* Logout Button */
 .logoutBtn {
-  background: #FF8500;
-  color: white;
-  border: 2px solid #FF8500;
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid rgba(148, 163, 184, 0.2);
   padding: 10px 20px;
-  border-radius: 25px;
+  border-radius: 12px;
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
@@ -169,10 +177,10 @@
 }
 
 .logoutBtn:hover {
-  background: transparent;
-  color: #FF8500;
+  color: #ffffff;
+  border-color: #6366f1;
+  background: rgba(99, 102, 241, 0.08);
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(255, 133, 0, 0.3);
 }
 
 /* Mobile Menu Button */
@@ -180,7 +188,7 @@
   display: none;
   background: none;
   border: none;
-  color: #333;
+  color: #94a3b8;
   cursor: pointer;
   padding: 5px;
   transition: color 0.3s ease;
@@ -189,7 +197,7 @@
 }
 
 .menuButton:hover {
-  color: #FF8500;
+  color: #ffffff;
 }
 
 /* Overlay */
@@ -200,13 +208,15 @@
   left: 0;
   width: 100%;
   height: calc(100vh - 80px);
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   z-index: 998;
 }
 
 /* Active Link State */
 .navLink.active {
-  color: #FF8500;
+  color: #a5b4fc;
   font-weight: 600;
 }
 
@@ -234,8 +244,11 @@
     top: 70px;
     left: 0;
     width: 100%;
-    background: white;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    background: rgba(10, 10, 15, 0.97);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     transform: translateY(-100%);
     opacity: 0;
     visibility: hidden;
@@ -285,9 +298,22 @@
   .signInBtn,
   .logoutBtn {
     margin: 10px 20px !important;
-    border-radius: 25px;
+    border-radius: 12px;
     width: calc(100% - 40px);
-    border: 2px solid #FF8500 !important;
+  }
+
+  .askQuestionLink,
+  .signInBtn {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border: none;
+  }
+
+  .logoutBtn {
+    border: 1px solid rgba(148, 163, 184, 0.2);
+  }
+
+  .signInContainer {
+    display: block;
   }
 
   .overlay {
@@ -340,7 +366,6 @@
 /* Scrolled State */
 .header.scrolled {
   height: 70px;
-  box-shadow: 0 2px 30px rgba(0, 0, 0, 0.15);
 }
 
 .header.scrolled + .headerSpacer {

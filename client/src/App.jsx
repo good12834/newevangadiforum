@@ -13,6 +13,9 @@ import Login from "./pages/Login/Login";
 import SignUp from "./pages/SignUp/SignUp";
 import { jwtDecode } from "jwt-decode";
 import HowItWorks from "./pages/HowItWorks/HowItWorks";
+import CommunitySupport from "./pages/CommunitySupport/CommunitySupport";
+import LatestTechnology from "./pages/LatestTechnology/LatestTechnology";
+import InteractiveLearning from "./pages/InteractiveLearning/InteractiveLearning";
 import ForgetPassword from "./pages/ForgetPassword/ForgetPassword";
 import EditQuestion from "./pages/EditQuestion/EditQuestion";
 import EditAnswer from "./pages/EditAnswer/EditAnswer";
@@ -125,6 +128,9 @@ function App() {
             element={token ? <Navigate to="/home" /> : <ForgetPassword />}
           />
           <Route path="/how-it-works" element={<HowItWorks />} />
+          <Route path="/community-support" element={<CommunitySupport />} />
+          <Route path="/latest-technology" element={<LatestTechnology />} />
+          <Route path="/interactive-learning" element={<InteractiveLearning />} />
 
           {/* ----------------------- PROTECTED ROUTES ----------------------- */}
           {/* User must be logged in to access these */}

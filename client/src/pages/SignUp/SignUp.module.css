@@ -13,6 +13,8 @@
   align-items: center;
   gap: 2rem;
   padding: 20px;
+  background: #0a0a0f;
+  min-height: calc(100vh - 80px);
 }
 
 /* ===== Register Page ===== */
@@ -23,9 +25,10 @@
 }
 
 .registerBox {
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 5px 0 25px rgba(0, 0, 0, 0.15), -5px 0 25px rgba(0, 0, 0, 0.15);
+  background: #13131a;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   padding: 40px;
   width: 100%;
   max-width: 500px;
@@ -34,7 +37,7 @@
 
 .registerBox h2 {
   font-size: 26px;
-  color: rgb(45, 56, 94);
+  color: #f1f5f9;
   margin-bottom: 20px;
 }
 
@@ -47,18 +50,24 @@
 /* ===== Input Fields ===== */
 .inputField {
   width: 100%;
-  padding: 12px 35px 12px 12px; /* Reduced space for smaller eye icon */
+  padding: 12px 35px 12px 12px;
   margin: 10px 0 20px 0;
-  border: 1px solid #ccc;
+  border: 1px solid rgba(148, 163, 184, 0.15);
   border-radius: 10px;
   font-size: 16px;
   outline: none;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  background: #0a0a0f;
+  color: #e2e8f0;
 }
 
 .inputField:focus {
-  border-color: #ff8500;
-  box-shadow: 0 0 0 2px rgba(255, 133, 0, 0.2);
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.inputField::placeholder {
+  color: #64748b;
 }
 
 /* ===== Password Wrapper & Eye Toggle ===== */
@@ -71,34 +80,33 @@
 .passwordToggle {
   position: absolute;
   top: 50%;
-  right: 8px; /* Moved from 0 to 8px for better spacing */
+  right: 8px;
   transform: translateY(-50%);
   background: none;
   border: none;
-  color: #777;
+  color: #64748b;
   cursor: pointer;
-  padding: 4px; /* Reduced padding */
+  padding: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
   outline: none;
   box-shadow: none;
-  width: 24px; /* Fixed width */
-  height: 24px; /* Fixed height */
-  border-radius: 3px; /* Small rounded corners */
+  width: 24px;
+  height: 24px;
+  border-radius: 3px;
 }
 
-/* Make the eye icons very small */
 .passwordToggle svg {
-  width: 16px; /* Smaller icon */
+  width: 16px;
   height: 16px;
 }
 
 .passwordToggle:hover,
 .passwordToggle:focus,
 .passwordToggle:active {
-  color: #777;
-  background-color: #f5f5f5; /* Light background on hover */
+  color: #94a3b8;
+  background-color: rgba(148, 163, 184, 0.08);
   outline: none;
   box-shadow: none;
 }
@@ -107,36 +115,44 @@
 .submitButton {
   width: 100%;
   padding: 14px;
-  background: #ff8500;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   border: none;
-  border-radius: 6px;
+  border-radius: 12px;
   color: #fff;
   font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
   outline: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.25);
 }
 
 .submitButton:hover {
-  background-color: #e55a00;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
 }
 
 .submitButton:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
 }
 
 /* Switch Text */
 .switchText {
   margin-top: 15px;
   font-size: 14px;
+  color: #94a3b8;
 }
 
 .switchText a {
-  color: #ff8500;
+  color: #818cf8;
   text-decoration: none;
+  font-weight: 600;
 }
 
 .switchText a:hover {
+  color: #a78bfa;
   text-decoration: underline;
 }
 
@@ -144,23 +160,24 @@
 .container {
   text-align: center;
   padding: 30px;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  background: #13131a;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   max-width: 800px;
   width: 100%;
 }
 
 .container h1 {
   font-size: 38px;
-  color: rgb(75, 69, 111);
-  font-weight: 500;
+  color: #f1f5f9;
+  font-weight: 600;
   margin-top: 12px;
   margin-bottom: 20px;
 }
 
 .container h3 {
-  color: #ff8500;
+  color: #818cf8;
   font-size: 20px;
   font-weight: 300;
   margin-bottom: 10px;
@@ -169,39 +186,44 @@
 .container p {
   font-size: 14px;
   font-weight: 400;
-  color: rgb(75, 69, 111);
+  color: #94a3b8;
   margin-bottom: 16px;
   line-height: 1.6;
 }
 
 .container a {
-  color: #ff8500;
+  color: #818cf8;
   text-decoration: none;
   font-weight: 600;
 }
 
 .container a:hover {
+  color: #a78bfa;
   text-decoration: underline;
 }
 
 .container .button {
   margin-top: 30px;
-  background-color: #ff8500;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   border: none;
-  border-radius: 6px;
+  border-radius: 12px;
   color: #fff;
-  padding: 10px 20px;
+  padding: 12px 24px;
   cursor: pointer;
   font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.25);
 }
 
 .container .button:hover {
-  background-color: #e55a00;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
 }
 
 /* Password error message */
 .passwordError {
-  color: #ff4444;
+  color: #fca5a5;
   font-size: 12px;
   margin-top: -15px;
   margin-bottom: 15px;
@@ -211,12 +233,12 @@
 
 /* Optional: Add red border to input when there's an error */
 .inputError {
-  border-color: #ff4444 !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
 }
 
 .inputError:focus {
-  border-color: #ff4444 !important;
-  box-shadow: 0 0 0 2px rgba(255, 68, 68, 0.2) !important;
+  border-color: rgba(239, 68, 68, 0.6) !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
 }
 
 /* ===== Media Queries ===== */
@@ -239,22 +261,6 @@
     padding: 40px;
     text-align: left;
   }
-
-  .inputField {
-    padding: 14px 35px 14px 14px; /* Consistent reduced space */
-  }
-
-  .passwordToggle {
-    right: 8px;
-    padding: 4px;
-    width: 24px;
-    height: 24px;
-  }
-
-  .passwordToggle svg {
-    width: 16px;
-    height: 16px;
-  }
 }
 
 @media (max-width: 767px) {
@@ -270,21 +276,5 @@
   .container h1,
   .container p {
     text-align: center;
-  }
-
-  .inputField {
-    padding: 10px 35px 10px 10px; /* Consistent reduced space */
-  }
-
-  .passwordToggle {
-    right: 8px;
-    padding: 4px;
-    width: 22px; /* Slightly smaller on mobile */
-    height: 22px;
-  }
-
-  .passwordToggle svg {
-    width: 14px; /* Even smaller on mobile */
-    height: 14px;
   }
 }

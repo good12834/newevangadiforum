@@ -3,6 +3,8 @@
   display: flex;
   align-items: center;
   flex: 1;
+  min-height: calc(100vh - 80px);
+  background: #0a0a0f;
 }
 
 /* Left Side - Form */
@@ -10,7 +12,6 @@
   width: 48%;
   padding: 30px;
   border-radius: 5px;
-  
   flex: 1;
   align-items: center;
 }
@@ -19,45 +20,100 @@
   padding: 10px;
   border-radius: 8px;
   margin: 0 auto !important;
+  max-width: 440px;
 }
 
 .formContainer h1 {
   margin: 10px;
   padding-bottom: 5px;
   text-align: center;
+  color: #ffffff;
+  font-size: 2rem;
 }
 
 .inputGroup {
   margin-bottom: 15px;
 }
 
-input {
+.inputGroup label {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.inputGroup input {
   width: 100%;
-  padding: 10px;
+  padding: 12px 15px;
   font-size: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: #f8f8f8;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 10px;
+  background: #13131a;
+  color: #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.inputGroup input:focus {
+  outline: none;
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.inputGroup input::placeholder {
+  color: #64748b;
 }
 
 /* Buttons */
-button {
-  width: 50%;
-  padding: 12px;
-  background-color: #f39228;
+.submitButton {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-button:hover:not(:disabled) {
-  background-color: #f89123;
+.submitButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
 }
 
-button:disabled {
-  background-color: #f39228;
+.submitButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Error & Success Messages */
+.error {
+  color: #fca5a5;
+  font-size: 0.9rem;
+  margin: 10px 0;
+  padding: 10px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.success {
+  color: #86efac;
+  font-size: 0.9rem;
+  margin: 10px 0;
+  padding: 10px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: 8px;
+  text-align: center;
 }
 
 /* Right Side - Image & Text */
@@ -79,17 +135,20 @@ button:disabled {
 
 .overridephoto {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   max-width: 500px;
   margin: 0 auto;
+  padding: 2rem;
 }
 
 .textContainer {
   color: #ffffff;
-  width: 40%;
+  text-align: center;
 }
 
 .textContainer span {
-  color: #f39228;
+  color: #818cf8;
 }
 
 .textContainer h1 {
@@ -97,49 +156,45 @@ button:disabled {
   font-weight: bold;
   margin: 10px 0;
 }
-.registerLink{
+
+.registerLink {
   padding: 1rem 0;
+  color: #94a3b8;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.registerLink a {
+  color: #818cf8;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.registerLink a:hover {
+  color: #a78bfa;
+  text-decoration: underline;
 }
 
 .forgot__password {
   text-align: left;
-  margin: 10px;
-  font-size: 16px;
+  margin: 15px 10px;
+  font-size: 14px;
 }
 
-.forgot__password a,
-forgot__assword h3 a {
+.forgot__password a {
+  color: #818cf8;
   text-decoration: none;
-  color: #f89123;
 }
 
-.forgot__password a:hover,
-forgot__assword h3 a:hover {
+.forgot__password a:hover {
+  color: #a78bfa;
   text-decoration: underline;
-  color: #f39228;
 }
 
-.directToRegister {
- color: #ff7300
+.loginContainer a {
+  color: #818cf8;
 }
 
-.loginContainer a{
-  color: #ff7300;
-}
-
-.submitButton {
-  width: 60%;
-}
-.register{
-  width: 90%;
-  display: flex;
-  gap: 10px;
-  margin-left: 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
 /* Media Query for Smaller Screens */
 @media (max-width: 768px) {
   .leftWrapper {
@@ -159,7 +214,6 @@ forgot__assword h3 a:hover {
   }
 
   .formContainer {
-    /* max-width: 100%; */
     padding: 15px;
   }
 
@@ -182,9 +236,9 @@ forgot__assword h3 a:hover {
     display: flex;
     flex-direction: column;
   }
-.inputGroup input {
-  width: 80% !important;
-}
+  .inputGroup input {
+    width: 100% !important;
+  }
   button {
     width: 100%;
     padding: 14px;

@@ -35,6 +35,14 @@ const createTables = async (req, res) => {
     FOREIGN KEY (question_id) REFERENCES questionTable(question_id) ON DELETE CASCADE
   )`;
 
+  const ai_answers_table = `CREATE TABLE IF NOT EXISTS aiAnswers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    question_id INT NOT NULL,
+    ai_answer TEXT NOT NULL,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (question_id) REFERENCES questionTable(question_id) ON DELETE CASCADE
+  )`;
+
   try {
     await dbConnection.query(user_table);
     console.log("Users Table created successfully");
@@ -45,7 +53,10 @@ const createTables = async (req, res) => {
     await dbConnection.query(answer_table);
     console.log("Answers Table created successfully");
 
-    res.end("Evangadi Form Table is Successfully created");
+    await dbConnection.query(ai_answers_table);
+    console.log("AI Answers Table created successfully");
+
+    res.end("Evangadi Forum Tables created successfully");
   } catch (err) {
     console.error("Error creating tables:", err.message);
     res.status(500).end("Error creating tables");

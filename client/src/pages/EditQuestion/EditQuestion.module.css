@@ -3,9 +3,10 @@
   max-width: 800px;
   margin: 40px auto;
   padding: 30px;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+  background: #13131a;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 }
 
 .header {
@@ -14,24 +15,24 @@
 }
 
 .header h2 {
-  color: #333;
+  color: #f1f5f9;
   margin-bottom: 8px;
   font-size: 1.8rem;
   font-weight: 600;
 }
 
 .header p {
-  color: #666;
+  color: #64748b;
   font-size: 1rem;
 }
 
 .errorMessage {
-  background: #fed7d7;
-  color: #c53030;
+  background: rgba(239, 68, 68, 0.1);
+  color: #fca5a5;
   padding: 12px 15px;
   border-radius: 8px;
   margin-bottom: 20px;
-  border: 1px solid #feb2b2;
+  border: 1px solid rgba(239, 68, 68, 0.2);
   text-align: center;
 }
 
@@ -49,14 +50,16 @@
 
 .label {
   font-weight: 600;
-  color: #333;
+  color: #e2e8f0;
   font-size: 1rem;
 }
 
 .input {
   padding: 12px 15px;
-  border: 2px solid #e2e8f0;
-  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  background: #0a0a0f;
+  color: #e2e8f0;
+  border-radius: 12px;
   font-size: 1rem;
   transition: border-color 0.3s ease;
   font-family: inherit;
@@ -64,35 +67,39 @@
 
 .input:focus {
   outline: none;
-  border-color: #FF8500;
-  box-shadow: 0 0 0 3px rgba(255, 133, 0, 0.1);
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.input::placeholder {
+  color: #64748b;
 }
 
 .previewBox {
   padding: 15px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  background: #f8f9fa;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 12px;
+  background: #0a0a0f;
   min-height: 60px;
   line-height: 1.5;
-  color: #333;
+  color: #94a3b8;
 }
 
 .quillEditor {
   min-height: 200px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 12px;
   margin-bottom: 5px;
 }
 
 .helpText {
-  color: #718096;
+  color: #64748b;
   font-size: 0.85rem;
   margin-top: 5px;
 }
 
 .errorText {
-  color: #e53e3e;
+  color: #fca5a5;
   font-size: 0.85rem;
   margin-top: 5px;
 }
@@ -108,7 +115,7 @@
 .discardButton {
   padding: 12px 30px;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -117,23 +124,25 @@
 }
 
 .submitButton {
-  background: #FF8500;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   color: white;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.25);
 }
 
 .submitButton:hover {
-  background: #e55a00;
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(255, 133, 0, 0.3);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
 }
 
 .discardButton {
-  background: #718096;
-  color: white;
+  background: rgba(148, 163, 184, 0.1);
+  color: #94a3b8;
+  border: 1px solid rgba(148, 163, 184, 0.2);
 }
 
 .discardButton:hover {
-  background: #4a5568;
+  background: rgba(148, 163, 184, 0.2);
+  color: #e2e8f0;
   transform: translateY(-2px);
 }
 
@@ -141,29 +150,34 @@
   text-align: center;
   padding: 60px 20px;
   font-size: 1.1rem;
-  color: #666;
+  color: #64748b;
 }
 
 /* Quill Editor Customization */
-.ql-toolbar {
-  border-top: 1px solid #e2e8f0 !important;
-  border-left: 1px solid #e2e8f0 !important;
-  border-right: 1px solid #e2e8f0 !important;
+:global(.ql-toolbar) {
+  background: #13131a;
+  border: 1px solid rgba(148, 163, 184, 0.15) !important;
   border-bottom: none !important;
-  border-radius: 8px 8px 0 0;
+  border-radius: 12px 12px 0 0;
 }
 
-.ql-container {
-  border-bottom: 1px solid #e2e8f0 !important;
-  border-left: 1px solid #e2e8f0 !important;
-  border-right: 1px solid #e2e8f0 !important;
+:global(.ql-container) {
+  background: #0a0a0f;
+  border: 1px solid rgba(148, 163, 184, 0.15) !important;
   border-top: none !important;
-  border-radius: 0 0 8px 8px;
+  border-radius: 0 0 12px 12px;
   font-size: 1rem;
+  min-height: 200px;
 }
 
-.ql-editor {
+:global(.ql-editor) {
   min-height: 150px;
+  color: #e2e8f0;
+}
+
+:global(.ql-editor.ql-blank::before) {
+  color: #64748b;
+  font-style: normal;
 }
 
 /* Responsive Design */

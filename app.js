@@ -6,6 +6,7 @@ const createTables = require("./db/dbSchema");
 const userRoutes = require("./routes/userRoutes");
 const questionRoutes = require("./routes/questionRoutes");
 const answerRoutes = require("./routes/answerRoute");
+const aiRoutes = require("./routes/aiRoutes");
 const app = express();
 const port = process.env.PORT || 5500;
 // Middleware
@@ -20,6 +21,7 @@ app.use(express.static(path.join(__dirname, 'client/dist')));
 app.use("/api/users", userRoutes);
 app.use("/api/question", questionRoutes);
 app.use("/api/answers", answerRoutes);
+app.use("/api/ai", aiRoutes);
 // Endpoint to create tables
 app.get("/create-table", createTables);
 // Root route

@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
 import styles from "./AskQuestion.module.css";
 import axiosInstance from "../../API/axios";
+import { FaRobot } from "react-icons/fa";
+import { ClipLoader } from "react-spinners";
 
 function AskQuestion() {
   // State for form inputs
@@ -12,6 +13,42 @@ function AskQuestion() {
   const [success, setSuccess] = useState(false); // Success message state
   const [error, setError] = useState(""); // Error message state
   const [loading, setLoading] = useState(false); // Loading state while submitting
+  const [tagSuggestions, setTagSuggestions] = useState([]); // AI tag suggestions
+  const [tagLoading, setTagLoading] = useState(false); // Tag suggestion loading
+  const [tagError, setTagError] = useState(""); // Tag suggestion error
+
+  // Get AI-powered tag suggestions
+  const handleGetTagSuggestions = async () => {
+    if (!title.trim()) {
+      setTagError("Please enter a question title first");
+      return;
+    }
+
+    setTagLoading(true);
+    setTagError("");
+    setTagSuggestions([]);
+
+    try {
+      const response = await axiosInstance.post("/ai/suggest-tags", {
+        title,
+        description,
+      });
+      if (response.data.suggested_tags) {
+        setTagSuggestions(response.data.suggested_tags);
+      }
+    } catch (error) {
+      console.error("Tag suggestion error:", error);
+      setTagError("Failed to get tag suggestions");
+    } finally {
+      setTagLoading(false);
+    }
+  };
+
+  // Apply a suggested tag
+  const handleApplyTag = (suggestedTag) => {
+    setTag(suggestedTag);
+    setTagSuggestions([]);
+  };
 
   // Handle form submission
   const handleSubmit = async (e) => {
@@ -124,11 +161,26 @@ function AskQuestion() {
         <section className={styles.formSection}>
           <div className={styles.formCard}>
             <form onSubmit={handleSubmit} className={styles.form}>
-              {/* Tag input */}
+              {/* Tag input with AI suggestions */}
               <div className={styles.formGroup}>
-                <label htmlFor="tag" className={styles.label}>
-                  Category/Tag
-                </label>
+                <div className={styles.tagInputHeader}>
+                  <label htmlFor="tag" className={styles.label}>
+                    Category/Tag
+                  </label>
+                  <button
+                    type="button"
+                    className={styles.aiTagBtn}
+                    onClick={handleGetTagSuggestions}
+                    disabled={tagLoading}
+                  >
+                    <FaRobot />
+                    {tagLoading ? (
+                      <> Getting Tags...</>
+                    ) : (
+                      <>🤖 AI Suggest Tags</>
+                    )}
+                  </button>
+                </div>
                 <input
                   type="text"
                   id="tag"
@@ -140,6 +192,40 @@ function AskQuestion() {
                 <small className={styles.helpText}>
                   Add tags to help others find your question
                 </small>
+
+                {/* AI Tag Suggestions */}
+                {tagLoading && (
+                  <div className={styles.tagSuggestionLoading}>
+                    <ClipLoader size={14} color="#7C3AED" />
+                    <span>AI is analyzing your question for tags...</span>
+                  </div>
+                )}
+
+                {tagError && (
+                  <div className={styles.tagSuggestionError}>
+                    ⚠️ {tagError}
+                  </div>
+                )}
+
+                {tagSuggestions.length > 0 && (
+                  <div className={styles.tagSuggestionsBox}>
+                    <span className={styles.tagSuggestionLabel}>
+                      AI suggested tags:
+                    </span>
+                    <div className={styles.tagSuggestionsList}>
+                      {tagSuggestions.map((suggestion, index) => (
+                        <button
+                          key={index}
+                          type="button"
+                          className={styles.tagSuggestionChip}
+                          onClick={() => handleApplyTag(suggestion)}
+                        >
+                          {suggestion} +
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Title input */}

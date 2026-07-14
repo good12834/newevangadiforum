@@ -2,10 +2,11 @@
   max-width: 800px;
   width: 95%;
   margin: 40px auto;
-  padding: 20px 30px;
-  background-color: #fdfdfd;
-  border-radius: 10px;
-  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+  padding: 2rem 2.5rem;
+  background: #13131a;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 }
 
 .intro {
@@ -13,7 +14,7 @@
 }
 
 .intro h1 {
-  color: rgb(245, 118, 14);
+  color: #818cf8;
   font-size: 28px;
   margin-bottom: 10px;
 }
@@ -21,7 +22,7 @@
 .intro p {
   font-size: 17px;
   line-height: 1.6;
-  color: #333;
+  color: #94a3b8;
 }
 
 .partition {
@@ -29,7 +30,7 @@
 }
 
 .partition h2 {
-  color: rgb(245, 118, 14);;
+  color: #818cf8;
   font-size: 20px;
   margin-bottom: 8px;
 }
@@ -37,14 +38,14 @@
 .partition p {
   font-size: 16px;
   line-height: 1.6;
-  color: #000;
+  color: #94a3b8;
   margin-bottom: 8px;
 }
 
 .partition ol {
   margin-top: 8px;
   margin-left: 25px;
-  color: #222;
+  color: #cbd5e1;
   line-height: 1.7;
   list-style-position: inside;
   padding-left: 0;
@@ -57,16 +58,19 @@
 .tip {
   font-size: 16px;
   margin-top: 25px;
-  background: #f1dbbd;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.15);
   padding: 15px;
-  border-left: 4px solid rgb(245, 118, 14);;
-  border-radius: 5px;
+  border-left: 4px solid #6366f1;
+  border-radius: 12px;
+  color: #cbd5e1;
+  line-height: 1.6;
 }
 
 /* Media Queries */
 @media (max-width: 768px) {
   .container {
-    padding: 20px 20px;
+    padding: 20px;
   }
 
   .intro h1 {
@@ -89,13 +93,13 @@
 
   .tip {
     font-size: 14px;
-    padding: 12px 12px;
+    padding: 12px;
   }
 }
 
 @media (max-width: 480px) {
   .container {
-    padding: 15px 15px;
+    padding: 15px;
   }
 
   .intro h1 {
@@ -118,6 +122,6 @@
 
   .tip {
     font-size: 13px;
-    padding: 10px 10px;
+    padding: 10px;
   }
 }

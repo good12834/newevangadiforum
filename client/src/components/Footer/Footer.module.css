@@ -2,10 +2,10 @@
 
 /* Footer Container */
 .footer {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  background: #0d0d14;
   color: #ffffff;
   margin-top: auto;
-  border-top: 3px solid #FF8500;
+  border-top: 1px solid rgba(99, 102, 241, 0.08);
 }
 
 .container {
@@ -40,17 +40,18 @@
 .logo {
   height: 35px;
   width: auto;
+  filter: brightness(1.2);
 }
 
 .brandName {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #FF8500;
+  color: #818cf8;
   letter-spacing: -0.5px;
 }
 
 .tagline {
-  color: #b0b0b0;
+  color: #94a3b8;
   line-height: 1.6;
   font-size: 0.95rem;
   max-width: 300px;
@@ -69,18 +70,19 @@
   justify-content: center;
   width: 40px;
   height: 40px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(99, 102, 241, 0.1);
   border-radius: 50%;
-  color: #ffffff;
+  color: #a5b4fc;
   transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(99, 102, 241, 0.15);
 }
 
 .socialLink:hover {
-  background: #FF8500;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(255, 133, 0, 0.3);
-  border-color: #FF8500;
+  box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
+  color: #ffffff;
+  border-color: #6366f1;
 }
 
 /* Links Section */
@@ -92,7 +94,7 @@
 }
 
 .sectionTitle {
-  color: #FF8500;
+  color: #f1f5f9;
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 1rem;
@@ -106,7 +108,8 @@
   left: 0;
   width: 30px;
   height: 2px;
-  background: #FF8500;
+  background: linear-gradient(90deg, #6366f1, #a78bfa);
+  border-radius: 2px;
 }
 
 .linksList {
@@ -127,7 +130,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #b0b0b0;
+  color: #94a3b8;
   text-decoration: none;
   font-size: 0.9rem;
   transition: all 0.3s ease;
@@ -135,7 +138,7 @@
 }
 
 .footerLink:hover {
-  color: #FF8500;
+  color: #818cf8;
   transform: translateX(5px);
 }
 
@@ -153,25 +156,25 @@
 }
 
 .contactItem strong {
-  color: #ffffff;
+  color: #e2e8f0;
   font-size: 1rem;
 }
 
 .contactLabel {
-  color: #b0b0b0;
+  color: #94a3b8;
   font-size: 0.85rem;
   font-weight: 500;
 }
 
 .contactLink {
-  color: #ffffff;
+  color: #94a3b8;
   text-decoration: none;
   transition: color 0.3s ease;
   font-size: 0.9rem;
 }
 
 .contactLink:hover {
-  color: #FF8500;
+  color: #818cf8;
 }
 
 /* Bottom Bar */
@@ -180,12 +183,12 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   margin-top: 1rem;
 }
 
 .copyright {
-  color: #b0b0b0;
+  color: #64748b;
   font-size: 0.85rem;
 }
 
@@ -195,14 +198,14 @@
 }
 
 .legalLink {
-  color: #b0b0b0;
+  color: #64748b;
   text-decoration: none;
   font-size: 0.85rem;
   transition: color 0.3s ease;
 }
 
 .legalLink:hover {
-  color: #FF8500;
+  color: #818cf8;
 }
 
 /* Responsive Design */
@@ -298,7 +301,7 @@
   left: 0;
   width: 0;
   height: 1px;
-  background: #FF8500;
+  background: linear-gradient(90deg, #6366f1, #a78bfa);
   transition: width 0.3s ease;
 }
 
