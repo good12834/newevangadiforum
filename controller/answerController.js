@@ -21,7 +21,7 @@ const postAnswer = async (req, res) => {
 
   try {
     await dbConnection.query(
-      "INSERT INTO answerTable (user_id, answer, question_id) VALUES (?, ?, ?)",
+      "INSERT INTO answerTable (user_id, answer, question_id) VALUES ($1, $2, $3)",
       [userid, answer, question_id]
     );
     return res.status(StatusCodes.CREATED).json({
@@ -42,7 +42,7 @@ const allAnswers = async (req, res) => {
       questionTable.title,
       questionTable.question_description,
       answerTable.user_id,
-      answerTable.createdAt,
+      answerTable."createdAt",
       answerTable.answer_id,
       answerTable.question_id,
       userTable.user_name,
@@ -50,11 +50,11 @@ const allAnswers = async (req, res) => {
       FROM answerTable 
       JOIN userTable ON userTable.user_id = answerTable.user_id 
       JOIN questionTable ON answerTable.question_id = questionTable.question_id 
-      ORDER BY answerTable.createdAt DESC`;
+      ORDER BY answerTable."createdAt" DESC`;
 
-    const [allAnswers] = await dbConnection.query(fetchAllAnswers);
+    const result = await dbConnection.query(fetchAllAnswers);
 
-    res.status(StatusCodes.OK).json({ answers: allAnswers });
+    res.status(StatusCodes.OK).json({ answers: result.rows });
   } catch (error) {
     console.log("Get answers error:", error);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -76,24 +76,24 @@ const deleteAnswer = async (req, res) => {
 
   try {
     // Check if answer exists and user owns it
-    const [answer] = await dbConnection.query(
-      "SELECT user_id FROM answerTable WHERE answer_id = ?",
+    const answer = await dbConnection.query(
+      "SELECT user_id FROM answerTable WHERE answer_id = $1",
       [answer_id]
     );
 
-    if (answer.length === 0) {
+    if (answer.rows.length === 0) {
       return res.status(StatusCodes.NOT_FOUND).json({
         message: "Answer not found",
       });
     }
 
-    if (answer[0].user_id !== userid) {
+    if (answer.rows[0].user_id !== userid) {
       return res.status(StatusCodes.FORBIDDEN).json({
         message: "Not authorized to delete this answer",
       });
     }
 
-    await dbConnection.query("DELETE FROM answerTable WHERE answer_id = ?", [
+    await dbConnection.query("DELETE FROM answerTable WHERE answer_id = $1", [
       answer_id,
     ]);
     return res.status(StatusCodes.OK).json({
@@ -112,18 +112,18 @@ const getAnswerById = async (req, res) => {
   const { answer_id } = req.params;
 
   try {
-    const [answer] = await dbConnection.query(
-      "SELECT answer_id, answer, question_id, user_id, createdAt FROM answerTable WHERE answer_id = ?",
+    const answer = await dbConnection.query(
+      "SELECT answer_id, answer, question_id, user_id, \"createdAt\" FROM answerTable WHERE answer_id = $1",
       [answer_id]
     );
 
-    if (answer.length === 0) {
+    if (answer.rows.length === 0) {
       return res.status(StatusCodes.NOT_FOUND).json({
         message: "Answer not found",
       });
     }
 
-    return res.status(StatusCodes.OK).json(answer[0]);
+    return res.status(StatusCodes.OK).json(answer.rows[0]);
   } catch (error) {
     console.log("Get answer by ID error:", error);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -152,25 +152,25 @@ const editAnswer = async (req, res) => {
 
   try {
     // Check if answer exists and user owns it
-    const [existing] = await dbConnection.query(
-      "SELECT user_id FROM answerTable WHERE answer_id = ?",
+    const existing = await dbConnection.query(
+      "SELECT user_id FROM answerTable WHERE answer_id = $1",
       [answer_id]
     );
 
-    if (existing.length === 0) {
+    if (existing.rows.length === 0) {
       return res.status(StatusCodes.NOT_FOUND).json({
         message: "Answer not found",
       });
     }
 
-    if (existing[0].user_id !== userid) {
+    if (existing.rows[0].user_id !== userid) {
       return res.status(StatusCodes.FORBIDDEN).json({
         message: "Not authorized to edit this answer",
       });
     }
 
     await dbConnection.query(
-      "UPDATE answerTable SET answer = ? WHERE answer_id = ?",
+      "UPDATE answerTable SET answer = $1 WHERE answer_id = $2",
       [answer, answer_id]
     );
     return res.status(StatusCodes.OK).json({

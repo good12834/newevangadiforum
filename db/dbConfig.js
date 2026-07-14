@@ -1,19 +1,19 @@
-const mysql2 = require("mysql2");
+const { Pool } = require("pg");
 require("dotenv").config();
 
-// Use Railway's MYSQL_URL if available, otherwise fall back to individual variables
+// Use Render's DATABASE_URL if available, otherwise fall back to individual variables
 let dbConfig;
 
-if (process.env.MYSQL_URL) {
-  // Parse Railway's MYSQL_URL format: mysql://user:password@host:port/database
-  const url = new URL(process.env.MYSQL_URL);
+if (process.env.DATABASE_URL) {
+  // Render provides DATABASE_URL for PostgreSQL
   dbConfig = {
-    host: url.hostname,
-    port: url.port,
-    user: url.username,
-    password: url.password,
-    database: url.pathname.substring(1), // Remove leading slash
-    connectionLimit: 1000,
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false, // Required for Render PostgreSQL
+    },
+    connectionTimeoutMillis: 10000,
+    idleTimeoutMillis: 30000,
+    max: 20,
   };
 } else {
   // Fallback to individual environment variables
@@ -22,16 +22,18 @@ if (process.env.MYSQL_URL) {
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
     password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT || 3306,
-    connectionLimit: 1000,
+    port: process.env.DB_PORT || 5432,
+    ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+    max: 20,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 10000,
   };
 }
 
-
-const dbConnection = mysql2.createPool(dbConfig);
+const dbConnection = new Pool(dbConfig);
 
 // Test connection
-dbConnection.execute("SELECT 'test'", (err, result) => {
+dbConnection.query("SELECT 1", (err, result) => {
   if (err) {
     console.log("Database connection failed:", err.message);
   } else {
@@ -39,5 +41,4 @@ dbConnection.execute("SELECT 'test'", (err, result) => {
   }
 });
 
-module.exports = dbConnection.promise();
-// module.exports = dbConnection;
+module.exports = dbConnection;

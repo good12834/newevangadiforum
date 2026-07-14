@@ -41,7 +41,7 @@ app.use((req, res) => {
 async function startServer() {
   try {
     // Test database connection
-    await dbConnection.execute("select 'test'");
+    await dbConnection.query("SELECT 1");
     console.log("Database connection established");
   } catch (error) {
     console.log("Database connection failed:", error.message);

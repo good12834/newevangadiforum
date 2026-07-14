@@ -2,8 +2,8 @@ const dbConnection = require("../db/dbConfig");
 
 // Create Question
 async function createQuestion(req, res) {
-  const { title, question_description, tag } = req.body; // ✅ include tag
-  const userid = req.user?.userid; // ✅ comes from auth middleware
+  const { title, question_description, tag } = req.body;
+  const userid = req.user?.userid;
 
   if (!title || !question_description) {
     return res.status(400).json({
@@ -21,7 +21,7 @@ async function createQuestion(req, res) {
 
   try {
     await dbConnection.query(
-      "INSERT INTO questionTable (user_id, title, question_description, tag) VALUES (?, ?, ?, ?)",
+      "INSERT INTO questionTable (user_id, title, question_description, tag) VALUES ($1, $2, $3, $4)",
       [userid, title, question_description, tag || null]
     );
 
@@ -40,23 +40,21 @@ async function createQuestion(req, res) {
 // Get all questions
 async function getAllQuestion(req, res) {
   try {
-    // Remove userid parameter since we're getting ALL questions
-    const [rows] = await dbConnection.query(
+    const result = await dbConnection.query(
       `SELECT 
         q.question_id,
         q.title,
         q.question_description,
         q.tag,
-        q.createdAt,
+        q."createdAt",
         q.user_id,
         u.user_name
       FROM questionTable q
       INNER JOIN userTable u ON q.user_id = u.user_id
-      ORDER BY q.createdAt DESC`
-      // Remove [userid] parameter
+      ORDER BY q."createdAt" DESC`
     );
 
-    res.status(200).json(rows);
+    res.status(200).json(result.rows);
   } catch (err) {
     console.error("Error in getAllQuestion:", err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -66,29 +64,28 @@ async function getAllQuestion(req, res) {
 // Get a single question by ID
 async function getSingleQuestion(req, res) {
   const { question_id } = req.params;
-  // Remove userid since we don't need it for filtering
 
   try {
-    const [rows] = await dbConnection.query(
+    const result = await dbConnection.query(
       `SELECT 
         q.question_id,
         q.title,
         q.question_description,
         q.tag,
-        q.createdAt,
+        q."createdAt",
         q.user_id,
         u.user_name
       FROM questionTable q
       INNER JOIN userTable u ON q.user_id = u.user_id
-      WHERE q.question_id = ?`,
-      [question_id] // Remove userid from parameters
+      WHERE q.question_id = $1`,
+      [question_id]
     );
 
-    if (rows.length === 0) {
+    if (result.rows.length === 0) {
       return res.status(404).json({ message: "Question not found" });
     }
 
-    res.status(200).json(rows[0]);
+    res.status(200).json(result.rows[0]);
   } catch (err) {
     console.error("Error in getSingleQuestion:", err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -104,28 +101,28 @@ async function updateQuestion(req, res) {
   console.log("Updating question:", question_id, "by user:", userid);
 
   try {
-    const [existing] = await dbConnection.query(
-      `SELECT * FROM questionTable WHERE question_id = ?`,
+    const existing = await dbConnection.query(
+      `SELECT * FROM questionTable WHERE question_id = $1`,
       [question_id]
     );
 
-    console.log("Found question:", existing);
+    console.log("Found question:", existing.rows);
 
-    if (existing.length === 0) {
+    if (existing.rows.length === 0) {
       return res.status(404).json({ message: "Question not found" });
     }
 
     // Check ownership clearly
-    if (parseInt(existing[0].user_id, 10) !== parseInt(userid, 10)) {
+    if (parseInt(existing.rows[0].user_id, 10) !== parseInt(userid, 10)) {
       return res.status(403).json({
-        message: `You are not authorized to update this question. (Owner: ${existing[0].user_id}, Your ID: ${userid})`,
+        message: `You are not authorized to update this question. (Owner: ${existing.rows[0].user_id}, Your ID: ${userid})`,
       });
     }
 
     await dbConnection.query(
       `UPDATE questionTable 
-       SET title = ?, question_description = ?, tag = ?
-       WHERE question_id = ?`,
+       SET title = $1, question_description = $2, tag = $3
+       WHERE question_id = $4`,
       [title, question_description, tag, question_id]
     );
 
@@ -139,7 +136,7 @@ async function updateQuestion(req, res) {
 // Delete a question by ID (only owner can delete)
 async function deleteQuestion(req, res) {
   const { question_id } = req.params;
-  const userid = req.user?.userid; // Add optional chaining
+  const userid = req.user?.userid;
 
   if (!userid) {
     return res.status(401).json({ message: "User not authenticated" });
@@ -147,25 +144,25 @@ async function deleteQuestion(req, res) {
 
   try {
     // Check if question exists
-    const [existing] = await dbConnection.query(
-      `SELECT * FROM questionTable WHERE question_id = ?`,
+    const existing = await dbConnection.query(
+      `SELECT * FROM questionTable WHERE question_id = $1`,
       [question_id]
     );
 
-    if (existing.length === 0) {
+    if (existing.rows.length === 0) {
       return res.status(404).json({ message: "Question not found" });
     }
 
     // Check ownership
-    if (parseInt(existing[0].user_id, 10) !== parseInt(userid, 10)) {
+    if (parseInt(existing.rows[0].user_id, 10) !== parseInt(userid, 10)) {
       return res.status(403).json({
-        message: `You are not authorized to delete this question. (Owner: ${existing[0].user_id}, Your ID: ${userid})`,
+        message: `You are not authorized to delete this question. (Owner: ${existing.rows[0].user_id}, Your ID: ${userid})`,
       });
     }
 
     // Delete the question
     await dbConnection.query(
-      `DELETE FROM questionTable WHERE question_id = ?`,
+      `DELETE FROM questionTable WHERE question_id = $1`,
       [question_id]
     );
 
