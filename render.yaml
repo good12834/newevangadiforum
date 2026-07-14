@@ -22,4 +22,18 @@ services:
         sync: false
       - key: DB_PORT
         value: 3306
+      - key: AI_MODE
+        value: auto
+      - key: AI_PROVIDER
+        value: auto
+      - key: OPENROUTER_MODEL
+        value: openai/gpt-4o-mini
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-2.0-flash
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: FRONTEND_URL
+        value: https://evangadiforum.goodtess.com
     healthCheckPath: /
