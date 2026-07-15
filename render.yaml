@@ -12,8 +12,6 @@ services:
         value: 10000
       - key: JWT_SECRET
         generateValue: true
-      - key: DATABASE_URL
-        sync: false
       - key: DB_USER
         sync: false
       - key: DB_NAME
@@ -23,7 +21,7 @@ services:
       - key: DB_PASSWORD
         sync: false
       - key: DB_PORT
-        value: 5432
+        value: 3306
       - key: AI_MODE
         value: auto
       - key: AI_PROVIDER

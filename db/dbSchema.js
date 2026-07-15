@@ -2,42 +2,44 @@ const dbConnection = require("./dbConfig");
 
 const createTables = async (req, res) => {
   const user_table = `CREATE TABLE IF NOT EXISTS userTable (
-    user_id SERIAL PRIMARY KEY,
+    user_id INT(30) AUTO_INCREMENT,
     user_name VARCHAR(50) NOT NULL,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     email VARCHAR(50) NOT NULL,
     password VARCHAR(100) NOT NULL,
     resetToken VARCHAR(255) DEFAULT NULL,
-    "resetTokenExpire" TIMESTAMP DEFAULT NULL,
-    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    resetTokenExpire DATETIME DEFAULT NULL,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id)
   )`;
 
   const question_table = `CREATE TABLE IF NOT EXISTS questionTable (
-    question_id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL,
-    title VARCHAR(200) NOT NULL,
-    question_description TEXT NOT NULL,
-    tag VARCHAR(40),
-    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES userTable(user_id) ON DELETE CASCADE
-  )`;
+  question_id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  title VARCHAR(200) NOT NULL,
+  question_description TEXT NOT NULL,
+  tag VARCHAR(40),
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES userTable(user_id) ON DELETE CASCADE
+)`;
 
   const answer_table = `CREATE TABLE IF NOT EXISTS answerTable (
-    answer_id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL,
-    question_id INTEGER NOT NULL,
+    answer_id INT(30) NOT NULL AUTO_INCREMENT,
+    user_id INT(30) NOT NULL,
+    question_id INT(30) NOT NULL,
     answer VARCHAR(300) NOT NULL,
-    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (answer_id),
     FOREIGN KEY (user_id) REFERENCES userTable(user_id) ON DELETE CASCADE,
     FOREIGN KEY (question_id) REFERENCES questionTable(question_id) ON DELETE CASCADE
   )`;
 
   const ai_answers_table = `CREATE TABLE IF NOT EXISTS aiAnswers (
-    id SERIAL PRIMARY KEY,
-    question_id INTEGER NOT NULL,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    question_id INT NOT NULL,
     ai_answer TEXT NOT NULL,
-    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (question_id) REFERENCES questionTable(question_id) ON DELETE CASCADE
   )`;
 

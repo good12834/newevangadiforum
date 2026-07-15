@@ -52,10 +52,10 @@ async function ensureAiAnswersTable() {
   try {
     await dbConnection.query(
       `CREATE TABLE IF NOT EXISTS aiAnswers (
-        id SERIAL PRIMARY KEY,
-        question_id INTEGER NOT NULL,
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        question_id INT NOT NULL,
         ai_answer TEXT NOT NULL,
-        "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (question_id) REFERENCES questionTable(question_id) ON DELETE CASCADE
       )`
     );
@@ -71,8 +71,8 @@ function sleep(ms) {
 
 async function saveFallbackAnswer(questionId, answer) {
   try {
-    await dbConnection.query("DELETE FROM aiAnswers WHERE question_id = $1", [questionId]);
-    await dbConnection.query("INSERT INTO aiAnswers (question_id, ai_answer) VALUES ($1, $2)", [questionId, answer]);
+    await dbConnection.query("DELETE FROM aiAnswers WHERE question_id = ?", [questionId]);
+    await dbConnection.query("INSERT INTO aiAnswers (question_id, ai_answer) VALUES (?, ?)", [questionId, answer]);
   } catch (error) {
     console.log("Unable to cache fallback AI answer:", error.message);
   }
@@ -296,50 +296,50 @@ async function generateAiAnswer(req, res) {
     await ensureAiAnswersTable();
 
     // Check if AI answer already exists for this question
-    const existingAiAnswer = await dbConnection.query(
-      "SELECT * FROM aiAnswers WHERE question_id = $1",
+    const [existingAiAnswer] = await dbConnection.query(
+      "SELECT * FROM aiAnswers WHERE question_id = ?",
       [question_id]
     );
 
-    if (existingAiAnswer.rows.length > 0) {
-      const storedAnswer = existingAiAnswer.rows[0].ai_answer || "";
+    if (existingAiAnswer.length > 0) {
+      const storedAnswer = existingAiAnswer[0].ai_answer || "";
       const isDemoAnswer = storedAnswer.includes("This is a demo AI answer") || storedAnswer.includes("Demo Mode");
       const isFallbackAnswer = storedAnswer.includes("AI Answer Temporarily Unavailable") || storedAnswer.includes("Fallback Mode");
 
       if ((!isDemoAnswer && !isFallbackAnswer) || (!useRealApi && !isDemoAnswer)) {
         return res.status(200).json({
-          ai_answer: existingAiAnswer.rows[0].ai_answer,
+          ai_answer: existingAiAnswer[0].ai_answer,
           cached: true,
-          generated_at: existingAiAnswer.rows[0].createdAt,
+          generated_at: existingAiAnswer[0].createdAt,
         });
       }
 
-      await dbConnection.query("DELETE FROM aiAnswers WHERE question_id = $1", [question_id]);
+      await dbConnection.query("DELETE FROM aiAnswers WHERE question_id = ?", [question_id]);
     }
 
     // Fetch the question details
-    const question = await dbConnection.query(
+    const [question] = await dbConnection.query(
       `SELECT q.title, q.question_description, q.tag 
        FROM questionTable q 
-       WHERE q.question_id = $1`,
+       WHERE q.question_id = ?`,
       [question_id]
     );
 
-    if (question.rows.length === 0) {
+    if (question.length === 0) {
       return res.status(404).json({
         error: "Not Found",
         message: "Question not found",
       });
     }
 
-    ({ title, question_description, tag } = question.rows[0]);
+    ({ title, question_description, tag } = question[0]);
 
     // If the live AI API is unavailable, return a fallback response instead of failing.
     if (!useRealApi) {
       const simulatedAnswer = buildFallbackAnswer(title, question_description, tag);
 
       await dbConnection.query(
-        "INSERT INTO aiAnswers (question_id, ai_answer) VALUES ($1, $2)",
+        "INSERT INTO aiAnswers (question_id, ai_answer) VALUES (?, ?)",
         [question_id, simulatedAnswer]
       );
 
@@ -364,7 +364,7 @@ Give a detailed, helpful answer with code examples where appropriate. Format you
 
     // Store the AI answer in the database
     await dbConnection.query(
-      "INSERT INTO aiAnswers (question_id, ai_answer) VALUES ($1, $2)",
+      "INSERT INTO aiAnswers (question_id, ai_answer) VALUES (?, ?)",
       [question_id, aiAnswer]
     );
 
@@ -435,18 +435,18 @@ async function generateAnswerSuggestions(req, res) {
   }
 
   try {
-    const question = await dbConnection.query(
+    const [question] = await dbConnection.query(
       `SELECT q.title, q.question_description, q.tag 
        FROM questionTable q 
-       WHERE q.question_id = $1`,
+       WHERE q.question_id = ?`,
       [question_id]
     );
 
-    if (question.rows.length === 0) {
+    if (question.length === 0) {
       return res.status(404).json({ error: "Question not found" });
     }
 
-    const { title, question_description, tag } = question.rows[0];
+    const { title, question_description, tag } = question[0];
 
     const prompt = `You are assisting a developer writing an answer on a forum. 
 The question is:
