@@ -28,7 +28,7 @@ const createTables = async (req, res) => {
     answer_id INT(30) NOT NULL AUTO_INCREMENT,
     user_id INT(30) NOT NULL,
     question_id INT(30) NOT NULL,
-    answer VARCHAR(300) NOT NULL,
+    answer TEXT NOT NULL,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (answer_id),
     FOREIGN KEY (user_id) REFERENCES userTable(user_id) ON DELETE CASCADE,

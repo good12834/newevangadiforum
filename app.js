@@ -9,25 +9,31 @@ const answerRoutes = require("./routes/answerRoute");
 const aiRoutes = require("./routes/aiRoutes");
 const app = express();
 const port = process.env.PORT || 5500;
+
 // Middleware
 app.use(cors({
   origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:3000', 'https://evangadiforum.goodtess.com', 'https://newevangadiforum.vercel.app'],
   credentials: true
 }));
 app.use(express.json());
+
 // Serve static files from the React app build directory
 app.use(express.static(path.join(__dirname, 'client/dist')));
+
 // Routes
 app.use("/api/users", userRoutes);
 app.use("/api/question", questionRoutes);
 app.use("/api/answers", answerRoutes);
 app.use("/api/ai", aiRoutes);
+
 // Endpoint to create tables
 app.get("/create-table", createTables);
+
 // Root route
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to Evangadi Forum backend" });
 });
+
 // Catch all handler: send back React's index.html file for client-side routing
 app.use((req, res) => {
   // Only serve index.html for non-API routes
@@ -37,23 +43,8 @@ app.use((req, res) => {
     res.status(404).json({ message: "API Route not found" });
   }
 });
-// Start server
-async function startServer() {
-  try {
-    // Test database connection
-    await dbConnection.execute("select 'test'");
-    console.log("Database connection established");
-    await createTables({}, { end: () => { } });
-  } catch (error) {
-    console.log("Database connection failed:", error.message);
-  } finally {
-    // Always start the server to avoid Render killing the process
-    app.listen(port, () => {
-      console.log(`Server listening on port ${port}`);
-    });
-  }
-}
-startServer();
 
-
-
+// Start server immediately - db connection happens asynchronously in dbConfig.js
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});

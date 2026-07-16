@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://evangadi-forum-backend.onrender.com/api/:path*"
+      "destination": "https://evangadi-forum-backend-odup.onrender.com/api/:path*"
     },
     {
       "source": "/(.*)",

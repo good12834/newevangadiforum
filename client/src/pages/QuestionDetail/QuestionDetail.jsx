@@ -25,6 +25,7 @@ const QuestionDetail = () => {
   const [loading, setLoading] = useState(true); // Loading state for question/answers
   const [answerLoading, setAnswerLoading] = useState(false); // Loading state for posting an answer
   const [isUserStable, setIsUserStable] = useState(false); // Ensures user data is loaded before fetching
+  const [localQuestion, setLocalQuestion] = useState(null); // Fallback if question not in context
   const navigate = useNavigate(); // For programmatic navigation
 
   // AI-specific state
@@ -42,17 +43,11 @@ const QuestionDetail = () => {
     }
   }, [user]);
 
-  // DEBUG: Log important data for development
-  console.log("🔍 DEBUG - Current User:", user);
-  console.log("🔍 DEBUG - Question ID:", question_id);
-  console.log("🔍 DEBUG - All Questions:", questions);
-
   // Fetch question and answers from API
   useEffect(() => {
     const fetchQuestionAndAnswers = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem("token"); // Auth token if needed
 
         // Fetch question details from backend
         const questionResponse = await axiosInstance.get(
@@ -60,10 +55,16 @@ const QuestionDetail = () => {
         );
         console.log("🔍 DEBUG - Question Data:", questionResponse.data);
 
-        // Add question to global context if not already there
-        if (!questions.find((q) => q.question_id == question_id)) {
-          setQuestions((prev) => [...prev, questionResponse.data]);
-        }
+        // Store in local state as fallback
+        setLocalQuestion(questionResponse.data);
+
+        // Also add question to global context if not already there
+        setQuestions((prev) => {
+          if (!prev.find((q) => q.question_id == question_id)) {
+            return [...prev, questionResponse.data];
+          }
+          return prev;
+        });
 
         // Fetch all answers
         const answersResponse = await axiosInstance.get("/answers/");
@@ -86,10 +87,10 @@ const QuestionDetail = () => {
     if (isUserStable) {
       fetchQuestionAndAnswers();
     }
-  }, [question_id, setQuestions, questions, isUserStable]);
+  }, [question_id, setQuestions, isUserStable]);
 
-  // Get the current question from context
-  const question = questions.find((q) => q.question_id == question_id);
+  // Get the current question - try context first, fall back to local state
+  const question = questions.find((q) => q.question_id == question_id) || localQuestion;
 
   // Check if current user can edit the question
   const canEditQuestion = () => {

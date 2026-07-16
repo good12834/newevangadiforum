@@ -1,68 +1,17 @@
 const mysql2 = require("mysql2");
 require("dotenv").config();
 
-const needsSSL = process.env.DB_SSL === "true" || process.env.NODE_ENV === "production";
-
 function createMySQLConfig(baseConfig) {
   const config = { ...baseConfig };
-  config.connectionLimit = 1000;
-  if (needsSSL || (process.env.MYSQL_URL && process.env.MYSQL_URL.includes("ssl-mode=REQUIRED"))) {
+  config.connectionLimit = 100;
+  config.waitForConnections = true;
+  config.queueLimit = 0;
+  if (process.env.NODE_ENV === "production") {
     config.ssl = {
       rejectUnauthorized: false,
     };
   }
   return config;
-}
-
-function createFallbackDb() {
-  const users = [];
-
-  return {
-    async execute(sql, params = []) {
-      const normalizedSql = String(sql).trim().replace(/\s+/g, " ").toLowerCase();
-
-      if (normalizedSql.includes("select 'test'")) {
-        return [[{ test: "test" }]];
-      }
-
-      if (normalizedSql.includes("select user_id from usertable where user_name = ? or email = ?")) {
-        const [username, email] = params;
-        const match = users.filter((user) => user.user_name === username || user.email === email);
-        return [match];
-      }
-
-      if (normalizedSql.includes("insert into usertable")) {
-        const [username, firstname, lastname, email, password] = params;
-        const user = {
-          user_id: users.length + 1,
-          user_name: username,
-          first_name: firstname,
-          last_name: lastname,
-          email,
-          password,
-        };
-        users.push(user);
-        return [{ insertId: user.user_id, affectedRows: 1 }];
-      }
-
-      if (normalizedSql.includes("select user_id, user_name, password from usertable where email = ?")) {
-        const [email] = params;
-        const user = users.find((entry) => entry.email === email);
-        return [user ? [user] : []];
-      }
-
-      if (normalizedSql.includes("select user_id from usertable where email = ?")) {
-        const [email] = params;
-        const user = users.find((entry) => entry.email === email);
-        return [user ? [user] : []];
-      }
-
-      return [[]];
-    },
-    async query(sql, params = []) {
-      return this.execute(sql, params);
-    },
-  };
 }
 
 let dbConfig;
@@ -96,28 +45,24 @@ if (process.env.MYSQL_URL) {
   });
 }
 
-let activeDb = createFallbackDb();
-const dbProxy = new Proxy({}, {
-  get(_target, prop) {
-    return activeDb[prop].bind(activeDb);
-  },
-});
+// Create the pool
+const pool = mysql2.createPool(dbConfig);
+const promisePool = pool.promise();
 
-try {
-  const pool = mysql2.createPool(dbConfig);
-  const promisePool = pool.promise();
+// Export the pool immediately so the server can start
+module.exports = promisePool;
 
-  promisePool
-    .execute("SELECT 'test'")
-    .then(() => {
-      activeDb = promisePool;
-      console.log("Database connected successfully");
-    })
-    .catch((error) => {
-      console.log("Database connection failed:", error.message);
-    });
-} catch (error) {
-  console.log("Database connection failed:", error.message);
-}
-
-module.exports = dbProxy;
+// Async connection attempt - log result but don't block startup
+(async () => {
+  try {
+    await promisePool.execute("SELECT 1");
+    console.log("Database connected successfully");
+  } catch (error) {
+    console.error("FATAL: Database connection failed:", error.message);
+    console.error("Database host:", dbConfig.host || process.env.DB_HOST);
+    console.error("Database port:", dbConfig.port || process.env.DB_PORT);
+    console.error("Database user:", dbConfig.user || process.env.DB_USER);
+    console.error("Database name:", dbConfig.database || process.env.DB_NAME);
+    console.error("NOTE: The server is running but database operations will fail!");
+  }
+})();
