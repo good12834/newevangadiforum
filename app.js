@@ -43,6 +43,7 @@ async function startServer() {
     // Test database connection
     await dbConnection.execute("select 'test'");
     console.log("Database connection established");
+    await createTables({}, { end: () => { } });
   } catch (error) {
     console.log("Database connection failed:", error.message);
   } finally {
