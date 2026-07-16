@@ -1,6 +1,7 @@
-const express = require("express");
+  const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const fs = require("fs");
 const dbConnection = require("./db/dbConfig");
 const createTables = require("./db/dbSchema");
 const userRoutes = require("./routes/userRoutes");
@@ -17,8 +18,12 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Serve static files from the React app build directory
-app.use(express.static(path.join(__dirname, 'client/dist')));
+// Serve static files from the React app build directory (only if it exists)
+const clientDistPath = path.join(__dirname, 'client/dist');
+if (fs.existsSync(clientDistPath)) {
+  app.use(express.static(clientDistPath));
+  console.log("Serving static files from client/dist");
+}
 
 // Routes
 app.use("/api/users", userRoutes);
@@ -38,7 +43,12 @@ app.get("/", (req, res) => {
 app.use((req, res) => {
   // Only serve index.html for non-API routes
   if (!req.originalUrl.startsWith('/api')) {
-    res.sendFile(path.join(__dirname, 'client/dist/index.html'));
+    const indexPath = path.join(__dirname, 'client/dist/index.html');
+    if (fs.existsSync(indexPath)) {
+      res.sendFile(indexPath);
+    } else {
+      res.status(200).json({ message: "Evangadi Forum API - Frontend is served separately on Vercel" });
+    }
   } else {
     res.status(404).json({ message: "API Route not found" });
   }
