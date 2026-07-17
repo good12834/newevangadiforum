@@ -6,7 +6,8 @@ function createMySQLConfig(baseConfig) {
   config.connectionLimit = 100;
   config.waitForConnections = true;
   config.queueLimit = 0;
-  if (process.env.NODE_ENV === "production") {
+  // Enable SSL if DB_SSL is set to true or if in production
+  if (process.env.DB_SSL === "true" || process.env.NODE_ENV === "production") {
     config.ssl = {
       rejectUnauthorized: false,
     };
