@@ -340,13 +340,18 @@ const QuestionDetail = () => {
           </p>
           {aiAnswer.error_type === "quota_exhausted" && (
             <div className={styles.aiErrorHint}>
-              <p>💡 <strong>Tip:</strong> The AI service quota has been exceeded. 
-              You can either wait until tomorrow, or <a 
+              <p>💡 <strong>Tip:</strong> All AI service quotas are currently exhausted. The system will automatically retry in a few hours when quotas reset.</p>
+              <p>🔑 To fix this now, you can <a 
                 href="https://aistudio.google.com/apikey" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className={styles.apiKeyLink}
-                >get a new free API key</a> and update <code>GEMINI_API_KEY</code> in your <code>.env</code> file.</p>
+                >get a new free Gemini API key</a> and ask the site admin to update it, or the admin can add credits to the <a
+                href="https://openrouter.ai/settings/credits"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.apiKeyLink}
+                >OpenRouter account</a>.</p>
             </div>
           )}
           {aiAnswer.cached && (

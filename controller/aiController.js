@@ -12,22 +12,32 @@ const OPENROUTER_MODEL = (process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini").
 const aiMode = (process.env.AI_MODE || (OPENROUTER_API_KEY ? "live" : GEMINI_API_KEY ? "live" : "demo")).toLowerCase().trim();
 const requestedProvider = (process.env.AI_PROVIDER || (OPENROUTER_API_KEY ? "openrouter" : "gemini")).toLowerCase().trim();
 const provider = requestedProvider === "auto" ? (OPENROUTER_API_KEY ? "openrouter" : "gemini") : requestedProvider;
-let useRealApi = aiMode !== "demo" && ((provider === "openrouter" && OPENROUTER_API_KEY) || (provider === "gemini" && GEMINI_API_KEY));
-const genAI = provider === "gemini" && useRealApi ? new GoogleGenAI({ apiKey: GEMINI_API_KEY }) : null;
-let model = provider === "gemini" && useRealApi ? GEMINI_MODEL : null;
+
+// Determine if we have any API keys configured at all
+const hasGeminiKey = !!GEMINI_API_KEY;
+const hasOpenRouterKey = !!OPENROUTER_API_KEY;
+const hasAnyKey = hasGeminiKey || hasOpenRouterKey;
+
+// useRealApi is now a function that checks if we have keys AND are not in cooldown
+function isLiveModeAvailable() {
+  if (aiMode === "demo") return false;
+  if (!hasAnyKey) return false;
+  // Check if at least one provider is not in cooldown
+  if (hasGeminiKey && !isProviderInCooldown("gemini")) return true;
+  if (hasOpenRouterKey && !isProviderInCooldown("openrouter")) return true;
+  return false;
+}
+
 console.log(`AI provider: ${provider}`);
 console.log(`AI Model: ${provider === "openrouter" ? OPENROUTER_MODEL : GEMINI_MODEL}`);
-console.log(`AI mode: ${useRealApi ? "live" : aiMode}`);
+console.log(`AI mode: ${hasAnyKey ? "live" : aiMode}`);
+console.log(`Gemini API key configured: ${hasGeminiKey}`);
+console.log(`OpenRouter API key configured: ${hasOpenRouterKey}`);
 
 function buildFallbackAnswer(title, questionDescription, tag) {
   const safeTitle = (title || "your question").substring(0, 120);
   const safeTag = tag || "programming";
-  return `## AI-Generated Answer (Fallback Mode)\n\n**Question:** ${safeTitle}\n\nBased on the question about "${safeTag}", here are some helpful points:\n\n1. **Understand the Problem**: ${safeTitle}...\n2. **Common Approaches**: There are several ways to approach this problem depending on your specific use case.\n3. **Best Practices**: Consider following community best practices and documentation.\n4. **Further Reading**: Check official documentation and community resources for more details.\n\n> ⚠️ *This answer was generated in fallback mode because the live Gemini API is currently unavailable or rate-limited.*`;
-}
-
-function switchToFallbackMode() {
-  useRealApi = false;
-  model = null;
+  return `## AI-Generated Answer (Fallback Mode)\n\n**Question:** ${safeTitle}\n\nBased on the question about "${safeTag}", here are some helpful points:\n\n1. **Understand the Problem**: ${safeTitle}...\n2. **Common Approaches**: There are several ways to approach this problem depending on your specific use case.\n3. **Best Practices**: Consider following community best practices and documentation.\n4. **Further Reading**: Check official documentation and community resources for more details.\n\n> ⚠️ *This answer was generated in fallback mode because the live AI service is currently unavailable or rate-limited.*`;
 }
 
 // Configuration
@@ -96,8 +106,11 @@ function isQuotaError(error) {
 function isPermanentQuotaExhaustion(error) {
   const msg = error.message || "";
   // "limit: 0" indicates the quota is completely exhausted, not just rate limited
-  return msg.includes("limit: 0") ||
-    msg.includes("quota") && msg.includes("exceeded") && msg.includes("free_tier");
+  if (msg.includes("limit: 0")) return true;
+  if (msg.includes("quota") && msg.includes("exceeded") && msg.includes("free_tier")) return true;
+  // OpenRouter insufficient credits
+  if (msg.includes("Insufficient credits") || msg.includes("never purchased credits")) return true;
+  return false;
 }
 
 // Check if a specific provider is in a cooldown period after quota exhaustion
@@ -108,8 +121,8 @@ function isProviderInCooldown(p) {
 // Check if ALL available providers are in cooldown (i.e. nothing can be tried)
 function isInQuotaCooldown() {
   const available = [];
-  if (GEMINI_API_KEY) available.push("gemini");
-  if (OPENROUTER_API_KEY) available.push("openrouter");
+  if (hasGeminiKey) available.push("gemini");
+  if (hasOpenRouterKey) available.push("openrouter");
   if (available.length === 0) return false;
   return available.every((p) => isProviderInCooldown(p));
 }
@@ -160,9 +173,9 @@ async function generateContentWithProvider(prompt, modelOverride = null, provide
     }
   }
 
-  // Gemini provider (can be used directly or as a fallback for OpenRouter)
+  // Gemini provider
   const geminiModel = modelOverride || GEMINI_MODEL;
-  if (!GEMINI_API_KEY) {
+  if (!hasGeminiKey) {
     throw new Error("Gemini API key is not configured");
   }
 
@@ -192,16 +205,14 @@ async function generateContentWithRetry(prompt, retries = MAX_RETRIES) {
   }
 
   // Build an ordered list of { provider, model } attempts.
-  // The configured provider is tried first; if its key is missing or it gets
-  // permanently exhausted, we fall back to the other provider when its key exists.
   const primaryIsOpenrouter = provider === "openrouter";
   const primaryModels = primaryIsOpenrouter
     ? [OPENROUTER_MODEL, ...OPENROUTER_FALLBACK_MODELS.filter((m) => m !== OPENROUTER_MODEL)]
     : [GEMINI_MODEL];
   const altProvider = primaryIsOpenrouter ? "gemini" : "openrouter";
   const altModels = primaryIsOpenrouter
-    ? (GEMINI_API_KEY ? [GEMINI_MODEL] : [])
-    : (OPENROUTER_API_KEY ? [OPENROUTER_MODEL, ...OPENROUTER_FALLBACK_MODELS.filter((m) => m !== OPENROUTER_MODEL)] : []);
+    ? (hasGeminiKey ? [GEMINI_MODEL] : [])
+    : (hasOpenRouterKey ? [OPENROUTER_MODEL, ...OPENROUTER_FALLBACK_MODELS.filter((m) => m !== OPENROUTER_MODEL)] : []);
 
   const attempts = [
     ...primaryModels.map((m) => ({ provider: provider, model: m })),
@@ -237,7 +248,7 @@ async function generateContentWithRetry(prompt, retries = MAX_RETRIES) {
           break;
         }
 
-        if (error.response?.status === 402 || error.response?.status === 403 || error.message?.includes("Insufficient credits") || error.message?.includes("payment") || error.message?.includes("credit")) {
+        if (error.response?.status === 402 || error.response?.status === 403 || error.message?.includes("Insufficient credits") || error.message?.includes("payment") || error.message?.includes("credit") || error.message?.includes("never purchased credits")) {
           // This provider's account has no credits / is forbidden. Cool it down and
           // move on to the next provider instead of aborting the whole request.
           quotaCooldownUntil[tryProvider] = Date.now() + QUOTA_COOLDOWN_MS;
@@ -270,8 +281,7 @@ async function generateContentWithRetry(prompt, retries = MAX_RETRIES) {
   }
 
   // All providers/models failed, use fallback
-  console.log(`All AI providers failed, switching to fallback mode`);
-  switchToFallbackMode();
+  console.log(`All AI providers failed, returning fallback answer`);
   const fallbackError = new Error("All configured AI providers are unavailable");
   fallbackError.isQuotaExhausted = true;
   throw fallbackError;
@@ -306,7 +316,7 @@ async function generateAiAnswer(req, res) {
       const isDemoAnswer = storedAnswer.includes("This is a demo AI answer") || storedAnswer.includes("Demo Mode");
       const isFallbackAnswer = storedAnswer.includes("AI Answer Temporarily Unavailable") || storedAnswer.includes("Fallback Mode");
 
-      if ((!isDemoAnswer && !isFallbackAnswer) || (!useRealApi && !isDemoAnswer)) {
+      if ((!isDemoAnswer && !isFallbackAnswer) || (!isLiveModeAvailable() && !isDemoAnswer)) {
         return res.status(200).json({
           ai_answer: existingAiAnswer[0].ai_answer,
           cached: true,
@@ -335,7 +345,7 @@ async function generateAiAnswer(req, res) {
     ({ title, question_description, tag } = question[0]);
 
     // If the live AI API is unavailable, return a fallback response instead of failing.
-    if (!useRealApi) {
+    if (!isLiveModeAvailable()) {
       const simulatedAnswer = buildFallbackAnswer(title, question_description, tag);
 
       await dbConnection.query(
@@ -376,11 +386,6 @@ Give a detailed, helpful answer with code examples where appropriate. Format you
   } catch (error) {
     console.log("AI Generation Error:", error.message);
 
-    // Switch to a built-in fallback answer whenever the live API becomes unavailable.
-    if (aiMode === "auto" || aiMode === "demo") {
-      switchToFallbackMode();
-    }
-
     const fallbackAnswer = buildFallbackAnswer(title, question_description, tag);
     await saveFallbackAnswer(question_id, fallbackAnswer);
 
@@ -419,7 +424,7 @@ async function generateAnswerSuggestions(req, res) {
   }
 
   // If AI is not running live, return empty suggestions
-  if (!useRealApi) {
+  if (!isLiveModeAvailable()) {
     return res.status(200).json({
       suggestion: null,
       note: "Set up GEMINI_API_KEY for AI suggestions",
@@ -497,7 +502,7 @@ async function suggestTags(req, res) {
   }
 
   // If AI is not running live, return common tags
-  if (!useRealApi) {
+  if (!isLiveModeAvailable()) {
     const commonTags = ["javascript", "react", "nodejs", "python", "html", "css", "database", "api"];
     return res.status(200).json({
       suggested_tags: commonTags.slice(0, 3),
