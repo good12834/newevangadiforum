@@ -12,6 +12,8 @@ services:
         value: 10000
       - key: JWT_SECRET
         generateValue: true
+      # Database credentials - MUST be configured in Render dashboard
+      # Get these from your Aiven MySQL database service
       - key: DB_USER
         sync: false
       - key: DB_NAME
@@ -23,7 +25,7 @@ services:
       - key: DB_SSL
         value: "true"
       - key: DB_PORT
-        value: 3306
+        value: 10171
       - key: AI_MODE
         value: auto
       - key: AI_PROVIDER
