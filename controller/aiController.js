@@ -179,7 +179,10 @@ async function generateContentWithProvider(prompt, modelOverride = null, provide
     throw new Error("Gemini API key is not configured");
   }
 
-  const geminiClient = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+  const geminiClient = new GoogleGenAI({
+    apiKey: GEMINI_API_KEY,
+    timeout: 120000,
+  });
   try {
     const interaction = await geminiClient.interactions.create({
       model: geminiModel,
