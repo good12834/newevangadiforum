@@ -43,5 +43,5 @@ services:
       - key: GEMINI_API_KEY
         sync: false
       - key: FRONTEND_URL
-        value: https://evangadiforum.goodtess.com
+        value: https://newevangadiforum.vercel.app/
     healthCheckPath: /
