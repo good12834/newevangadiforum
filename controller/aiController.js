@@ -5,7 +5,7 @@ const dbConnection = require("../db/dbConfig");
 require("dotenv").config({ path: path.resolve(__dirname, "..", ".env") });
 
 // Initialize AI provider
-const GEMINI_MODEL = (process.env.GEMINI_MODEL || "gemini-2.0-flash").trim();
+const GEMINI_MODEL = (process.env.GEMINI_MODEL || "gemini-3.1-pro-preview").trim();
 const GEMINI_API_KEY = (process.env.GEMINI_API_KEY || "").trim();
 const OPENROUTER_API_KEY = (process.env.OPENROUTER_API_KEY || "").trim();
 const OPENROUTER_MODEL = (process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini").trim();
@@ -173,7 +173,7 @@ async function generateContentWithProvider(prompt, modelOverride = null, provide
     }
   }
 
-  // Gemini provider
+  // Gemini provider - using @google/genai v2.11.0+ API
   const geminiModel = modelOverride || GEMINI_MODEL;
   if (!hasGeminiKey) {
     throw new Error("Gemini API key is not configured");
@@ -181,12 +181,15 @@ async function generateContentWithProvider(prompt, modelOverride = null, provide
 
   const geminiClient = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
   try {
-    const response = await geminiClient.models.generateContent({
+    const interaction = await geminiClient.interactions.create({
       model: geminiModel,
-      contents: prompt,
+      input: prompt,
+      generation_config: {
+        thinking_level: "low",
+      },
     });
 
-    return response.text;
+    return interaction.output_text;
   } catch (error) {
     if (error.message) {
       error.message = `Gemini API error: ${error.message}`;
