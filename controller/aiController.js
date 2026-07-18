@@ -181,20 +181,17 @@ async function generateContentWithProvider(prompt, modelOverride = null, provide
 
   const geminiClient = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
   try {
-    const interaction = await Promise.race([
-      geminiClient.interactions.create({
+    const result = await Promise.race([
+      geminiClient.models.generateContent({
         model: geminiModel,
-        input: prompt,
-        generation_config: {
-          thinking_level: "low",
-        },
+        contents: prompt,
       }),
       new Promise((_, reject) =>
         setTimeout(() => reject(new Error("Gemini API request timed out after 120s")), 120000)
       ),
     ]);
 
-    return interaction.output_text;
+    return result.text;
   } catch (error) {
     if (error.message) {
       error.message = `Gemini API error: ${error.message}`;
